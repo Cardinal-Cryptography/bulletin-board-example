@@ -1,0 +1,53 @@
+[package]
+name = "notice_pillar"
+version = "0.1.0"
+authors = ["[your_name] <[your_email]>"]
+edition = "2021"
+
+[dependencies]
+ink_primitives = { version = "~3.3.0", default-features = false }
+ink_metadata = { version = "~3.3.0", default-features = false, features = ["derive"], optional = true }
+ink_env = { version = "~3.3.0", default-features = false }
+ink_storage = { version = "~3.3.0", default-features = false }
+ink_lang = { version = "~3.3.0", default-features = false }
+ink_prelude = { version = "~3.3.0", default-features = false }
+ink_engine = { version = "~3.3.0", default-features = false, optional = true }
+
+# Following dependncies provide third-party tools (UIs, other clients) with information about how to decode
+# contract types, agnostic of language.
+scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
+scale-info = { version = "2", default-features = false, features = ["derive"], optional = true }
+
+[lib]
+name = "bulletin_board"
+path = "lib.rs"
+crate-type = [
+	# Used for normal contract Wasm blobs.
+	"cdylib",
+    # Used for ABI generation and for unit test.
+    "rlib",
+]
+
+[features]
+default = ["std"]
+std = [
+    "ink_primitives/std",
+    "ink_metadata/std",
+    "ink_env/std",
+    "ink_storage/std",
+    "ink_lang/std",
+    "scale/std",
+    "scale-info",
+    "scale-info/std",
+]
+ink-as-dependency = []
+
+# TODO: Document the followings
+[profile.dev]
+codegen-units = 16
+lto = true
+
+# Number of optimization passes, passed as an argument to `wasm-opt`.
+# For more information see the output of `cargo contract build --help`.
+[package.metadata.contract]
+optimization-passes = "z"
