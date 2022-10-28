@@ -24,12 +24,11 @@ use ink_lang as ink;
 mod bulletin_board {
 
     use highlighted_posts::{
-        HighlightedPostsError, DELETE_HIGHLIGHT_SELECTOR,
-        HIGHLIGHT_POST_SELECTOR,
+        HighlightedPostsError, HighlightedPostsRef, HIGHLIGHT_POST_SELECTOR,
     };
 
     use ink_env::{
-        call::{build_call, Call, ExecutionInput, Selector},
+        call::{build_call, Call, ExecutionInput, FromAccountId, Selector},
         DefaultEnvironment, Error as InkEnvError,
     };
 
@@ -352,6 +351,9 @@ mod bulletin_board {
             }
         }
 
+        // Constructs the cross-contract call using the manual builder pattern.
+        // It's more verbose than the `*Ref` pattern and we need to be more
+        // careful to use proper types.
         fn highlight_post(
             &self,
             author: AccountId,
@@ -380,21 +382,19 @@ mod bulletin_board {
             Ok(())
         }
 
+        // Constructs the cross-contract call using the `*Ref` pattern.
+        // More type-safe than the manual builder pattern.
+        // NOTE: Currently it does not support transferring tokens, unlike the
+        // builder pattern with `transferred_value` method.
         fn delete_highlight(
             &self,
             author: AccountId,
         ) -> Result<(), BulletinBoardError> {
             if let Some(highlight_board) = self.highlighted_posts_board {
-                build_call::<DefaultEnvironment>()
-                    .call_type(Call::new().callee(highlight_board))
-                    .exec_input(
-                        ExecutionInput::new(Selector::new(
-                            DELETE_HIGHLIGHT_SELECTOR,
-                        ))
-                        .push_arg(author), // Pass in arguments of the method.
-                    )
-                    .returns::<Result<(), HighlightedPostsError>>()
-                    .fire()??;
+                <HighlightedPostsRef as FromAccountId<
+                    super::bulletin_board::Environment,
+                >>::from_account_id(highlight_board)
+                .delete_by_author(author)?
             }
             Ok(())
         }

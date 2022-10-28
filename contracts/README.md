@@ -27,17 +27,17 @@ Let's start..
 ### emit events and verify in tests you did
 
 #### Creating and emitting events
-See `lib.rs` for `#[ink(event)]` on how to define it and [`fn emit_event`](./bulletin_board/lib.rs#L408) to see how to emit it.
+See `lib.rs` for `#[ink(event)]` on how to define it and [`fn emit_event`](./bulletin_board/lib.rs#L409) to see how to emit it.
 
-> Thing to note here is the custom `emit_event` function - you may have seen in official ink! documentation that events are emitted via `self::env().emit_event(my_event)` calls. The "official" version works when there is only one contract emitting events on our _execution path_. If our contract emits events and, during execution, calls another contract that emits events AND we have that contract as a dependency, we will have two unreleated event families (from two different contracts) and the compiler will fail to resolve type boundaries correctly. For more details, see comments on [`fn emit_event`](./bulletin_board/lib.rs#L408).
+> Thing to note here is the custom `emit_event` function - you may have seen in official ink! documentation that events are emitted via `self::env().emit_event(my_event)` calls. The "official" version works when there is only one contract emitting events on our _execution path_. If our contract emits events and, during execution, calls another contract that emits events AND we have that contract as a dependency, we will have two unreleated event families (from two different contracts) and the compiler will fail to resolve type boundaries correctly. For more details, see comments on [`fn emit_event`](./bulletin_board/lib.rs#L409).
 
 #### Testing the events were emitted
 
-In `lib.rs` look for calls to [`recorded_events()`](./bulletin_board/lib.rs#L525), to collect the emitted events, and [`assert_expected_*_event`](./bulletin_board/lib.rs#L534) to test whether we got the expected ones.
+In `lib.rs` look for calls to [`recorded_events()`](./bulletin_board/lib.rs#L526), to collect the emitted events, and [`assert_expected_*_event`](./bulletin_board/lib.rs#L535) to test whether we got the expected ones.
 
 ### do logging in your contract
 
-In `lib.rs` see [invocation](./bulletin_board/lib.rs#L194) of `ink_env::debug_println!` - this will produce a log message when ran in test. To verify, run [`event_on_post`](./bulletin_board/lib.rs#L520) test and observe the following log:
+In `lib.rs` see [invocation](./bulletin_board/lib.rs#L194) of `ink_env::debug_println!` - this will produce a log message when ran in test. To verify, run [`event_on_post`](./bulletin_board/lib.rs#L521) test and observe the following log:
 ```shell
 running 1 test
 `AccountId([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])` wants to create a post that expires after `100` blocks with the text `"Text"`
@@ -52,7 +52,7 @@ Derive (or implement manually) `SpreadLayout` and `PackedLayout` for the structs
 
 If you want your method to accept token transfer, you need to tag it with `payable` keyword: `#[ink(payable)]`. See [`BulletinBoard::post`](./bulletin_board/lib.rs#L183) for an example.
 
-For an example on how to do a cross-contract call _and_ transfer tokens, see [`highlight_post`](./bulletin_board/lib.rs#L355).
+For an example on how to do a cross-contract call _and_ transfer tokens, see [`highlight_post`](./bulletin_board/lib.rs#L358).
 
 ### unit test a contract
 
@@ -80,9 +80,10 @@ Every contract _instance_ is stored under an address of type `AccountId`. To cal
 
 Calling another contract can be currently made in two ways:
 
-1) Building the call manually. An example of that is [`highlight_post`](./bulletin_board/lib.rs#L355). Here, we set every piece of the call by hand and we have no help from the compiler (to tell us whether we use correct arguments or if the return type is valid).
-2) Using 
+1) Building the call manually. An example of that is [`highlight_post`](./bulletin_board/lib.rs#L358). Here, we set every piece of the call by hand and we have no help from the compiler (to tell us whether we use correct arguments or if the return type is valid). This manual approach gives contract author access to ink!-level [errors](https://docs.rs/ink_env/3.4.0/ink_env/enum.Error.html) which gives an option to recover from the low-level failures.
+2) Using the macro-generated `*Ref` pattern. An example of that is [`delete_highlight`](./bulletin_board/lib.rs#L390). This approach is type-safe but doesn't allow for transferring tokens with the call. At least not currently.
 
+Both approaches, if done correctly, provide a typed access to another contract.
 
 ### test a cross-contract call
 

@@ -3,7 +3,8 @@
 use ink_lang as ink;
 
 pub use highlighted_posts::{
-    HighlightedPostsError, DELETE_HIGHLIGHT_SELECTOR, HIGHLIGHT_POST_SELECTOR,
+    HighlightedPostsError, HighlightedPostsRef, DELETE_HIGHLIGHT_SELECTOR,
+    HIGHLIGHT_POST_SELECTOR,
 };
 
 #[ink::contract]
