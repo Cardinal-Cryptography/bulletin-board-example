@@ -22,6 +22,77 @@ Let's start..
 
 ## Setting up the environment
 
+### Install Rust & Cargo
+
+A pre-requisite is to have Rust and Cargo installed. Please follow [the official guide](https://doc.rust-lang.org/cargo/getting-started/installation.html).
+
+### ink!
+
+We will nede to install ink! dependencies: binaryen, and ink! contract linters. Finally a `cargo contract`. All these steps are described in the [ink! documentation](https://doc.rust-lang.org/cargo/getting-started/installation.html).
+
+## Example contracts.
+
+This repository contains two example smart contracts:
+* `/bulletin_board` - a smart contract that allows for posting bulletins with text (one per calling account).
+* `/highlighted_posts` - tracks posts that have been highlighted by the bulletin board.
+
+### Building
+
+You can build each of the contracts by executing
+```shell
+cargo contract build --release
+```
+in respective root folders (`/bulletin_board` and `highlighted_posts`). Verify that the build is successful and there are (among others) three additional files in `<example_contract>/target/ink` directory:
+* `metadata.json` -- contains information about the contract's API and types.
+* `*.wasm` -- actual logic of the contract.
+* `*.contract` -- the two above bundled up.
+
+### Deploying
+
+#### Prerequisities for interacting with Aleph Zero Testnet
+
+1. Install PolkadotJS browser extension.
+2. Create new account.
+3. Fund the account via Aleph Zero TestNet fauce - https://faucet.test.azero.dev/.
+
+#### Prerequisities for interacting with Local Node
+
+1. Spin up the local network - follow the [official Aleph Zero guid](https://github.com/Cardinal-Cryptography/aleph-node#local-network).
+2. Import Alice's key to PolkadotJS browser extension.
+    * Open up the PolkadotJS extension, click on the plus sign and _Import account from pre-existing seed_
+    * For local Aleph Zero network, we will use one of the pre-funded accounts: Alice. In the _Existing 12 or 24-word mnemonic seed_ paste in the following `0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a`.
+    * Give it a descriptive name and save. 
+
+#### Deploy to Contracts UI
+
+1. Go to https://contracts-ui.substrate.io
+2. Choose which network you want to deploy to:
+    * you can use Aleph Zero Testnet, or
+    * Local Node
+3. Click on **Add New Contract**
+4. Here you have to options:
+    * Either use an existing contract code (you will need to pass in a code hash of the contract you want to interact with), or
+    * Upload a contract from your machine
+5. After adding a contract it will appear on the left, under **Your contracts**. Click on it and you should be presented with a page where you can interact with it - call its methods.
+
+For more information about the **Contracts UI**  consult the official documentation: https://use.ink/getting-started/deploy-your-contract
+
+
+### Deploying example contracts with Contracts UI
+
+1. Go to https://contracts-ui.substrate.io
+2. Choose the network you want to deploy to.
+3. Click **Add New Contract** and then **Upload New Contract Code**.
+4. Choose an account that you own on that network with enough balance to cover the test.
+5. Click on **Upload Contract Bundle** and navigate to `highlighted_posts/target/ink` and choose `highlighted_posts.contract`.
+6. Press **Next** and then again **Next** and **Upload and instantiate**.
+7. Sign the transaction using your account.
+8. In the newly opened page, copy the last hash from the address bar: `https://contracts-ui.substrate.io/contract/<hash>` -- this is the address of your newly created contract.
+9. Repeat steps 3-5 for `bulletin_board` contract.
+10. When on **Upload and Instantiate Contract** page, choose **pricePerBlockListing** - this will define how much tokens the caller has to transfer. Change **highlightedPostsBoard** to your newly created contract from step **8**. Click **Next** and upload the second contract.
+
+You have both contracts deployed now. You can play with them, see how they interact with each other, notice how **Contracts UI** will do a _dry-run_ of your calls and show you the expected results even before you decide to do any transaction.
+
 ## How to ...
 
 ### emit events and verify in tests you did
@@ -107,33 +178,6 @@ Additionally, you can choose how many optimization passes the `cargo contract bu
 cargo contract build --help
 ```
 and look at `--optimization-passes` section.
-
-### deploy a contract using Contracts UI
-
-#### Prerequisities for interacting with Aleph Zero Testnet
-
-1. Install PolkadotJS browser extension.
-2. Create new account.
-3. Fund the account via Aleph Zero TestNet fauce - https://faucet.test.azero.dev/.
-
-#### Prerequisities for interacting with Local Node
-
-1. Spin up the local network [#TODO link to the guide]
-2. Import Alice's key to PolkadotJS browser extension [#TODO howto]
-
-#### Deploy to Contracts UI
-
-1. Go to https://contracts-ui.substrate.io
-2. Choose which network you want to deploy to:
-    * you can use Aleph Zero Testnet, or
-    * Local Node
-3. Click on **Add New Contract**
-4. Here you have to options:
-    * Either use an existing contract code (you will need to pass in a code hash of the contract you want to interact with), or
-    * Upload a contract from your machine
-5. After adding a contract it will appear on the left, under **Your contracts**. Click on it and you should be presented with a page where you can interact with it - call its methods.
-
-For more information about the **Contracts UI**  consult the official documentation: https://use.ink/getting-started/deploy-your-contract
 
 ## Concepts NOT covered in this example
 
