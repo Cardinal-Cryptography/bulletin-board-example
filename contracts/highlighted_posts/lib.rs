@@ -57,7 +57,7 @@ mod highlighted_posts {
         }
 
         /// Adds the post to the highlighted set.
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn add(
             &mut self,
             author: AccountId,

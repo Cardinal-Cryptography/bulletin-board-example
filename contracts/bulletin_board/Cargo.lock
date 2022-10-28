@@ -185,15 +185,15 @@ dependencies = [
 
 [[package]]
 name = "ink_engine"
-version = "3.3.1"
+version = "3.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "075eab468da2937288ec484be920cb18614147003d7f1afbdfcfb190ed771c46"
+checksum = "acb9d32ec27d71fefb3f2b6a26bae82a2c6509d7ad61e8a5107b6291a1b03ecb"
 dependencies = [
  "blake2",
  "derive_more",
  "parity-scale-codec",
  "rand",
- "secp256k1 0.24.0",
+ "secp256k1",
  "sha2",
  "sha3",
 ]
@@ -219,7 +219,7 @@ dependencies = [
  "rand",
  "rlibc",
  "scale-info",
- "secp256k1 0.22.1",
+ "secp256k1",
  "sha2",
  "sha3",
  "static_assertions",
@@ -304,9 +304,9 @@ dependencies = [
 
 [[package]]
 name = "ink_prelude"
-version = "3.3.1"
+version = "3.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e38d71af62cfec3425727d28665a947d636c3be6ae71ac3a79868ef8a08633f3"
+checksum = "b1f7f4dec15e573496c9d2af353e78bde84add391251608f25b5adcf175dc777"
 dependencies = [
  "cfg-if",
 ]
@@ -545,16 +545,7 @@ version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "26947345339603ae8395f68e2f3d85a6b0a8ddfe6315818e80b8504415099db0"
 dependencies = [
- "secp256k1-sys 0.5.2",
-]
-
-[[package]]
-name = "secp256k1"
-version = "0.24.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b7649a0b3ffb32636e60c7ce0d70511eda9c52c658cd0634e194d5a19943aeff"
-dependencies = [
- "secp256k1-sys 0.6.1",
+ "secp256k1-sys",
 ]
 
 [[package]]
@@ -562,15 +553,6 @@ name = "secp256k1-sys"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "152e20a0fd0519390fc43ab404663af8a0b794273d2a91d60ad4a39f13ffe110"
-dependencies = [
- "cc",
-]
-
-[[package]]
-name = "secp256k1-sys"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83080e2c2fc1006e625be82e5d1eb6a43b7fd9578b617fcc55814daf286bba4b"
 dependencies = [
  "cc",
 ]
