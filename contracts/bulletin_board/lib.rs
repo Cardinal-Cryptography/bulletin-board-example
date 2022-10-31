@@ -1,6 +1,17 @@
-#![cfg_attr(not(feature = "std"), no_std)]
+//! Examplary contract showcasing basic building blocks of writing smart
+//! contracts in ink!.
+//!
+//! The "Bulletin Board" smart contract's functionality allows for posting short
+//! texts to chain, one per user. Later, the posts can be deleted, but only by
+//! its authors.
+//!
+//! In the constructor of the contract we're instantiating an instance of
+//! "Highlighted Posts board". Note that this will work only if the `code_hash`,
+//! supplied as an argument to the constructor, indeed refers to the expected
+//! contract - otherwise the calls to `highlight_post` and `delete_highlight` will fail as the
+//! receiving contract will not have the expected endpoint.
 
-use ink_lang as ink;
+#![cfg_attr(not(feature = "std"), no_std)]
 
 // An entrypoint to all ink! smart contracts.
 // When expanded, this macro will:
@@ -20,7 +31,7 @@ use ink_lang as ink;
 // * at least one `#[ink(message)]`
 // * and few other.
 // More can be found [here](https://use.ink/macros-attributes/contract/).
-#[ink::contract]
+#[ink_lang::contract]
 mod bulletin_board {
 
     use highlighted_posts::{
@@ -422,7 +433,7 @@ mod bulletin_board {
 
         // Constructs the cross-contract call using the `*Ref` pattern.
         // More type-safe than the manual builder pattern. If you expanded the
-        // `#[ink::contract]` macro for this contract, you will find
+        // `#[ink_lang::contract]` macro for this contract, you will find
         // that `from_account_id` function constructs the `build_call` just like
         // we did manually in `fn highlight_post`.
         //
@@ -523,7 +534,7 @@ mod bulletin_board {
             assert_eq!(default.price_per_block_listing, 0);
         }
 
-        #[ink::test]
+        #[ink_lang::test]
         fn post_free_succeeds() {
             let accounts = get_default_test_accounts();
             let alice = accounts.alice;
@@ -559,7 +570,7 @@ mod bulletin_board {
             );
         }
 
-        #[ink::test]
+        #[ink_lang::test]
         fn event_on_post() {
             let mut instance = BulletinBoard::free();
             let bulletin = post_from_alice(&mut instance);
@@ -615,7 +626,7 @@ mod bulletin_board {
             expected_bulletin
         }
 
-        #[ink::test]
+        #[ink_lang::test]
         fn delete_works() {
             let accounts = get_default_test_accounts();
             let alice = accounts.alice;
@@ -656,7 +667,7 @@ mod bulletin_board {
             );
         }
 
-        #[ink::test]
+        #[ink_lang::test]
         fn event_on_delete() {
             let mut instance = BulletinBoard::free();
             let _bulletin = post_from_alice(&mut instance);
@@ -692,7 +703,7 @@ mod bulletin_board {
             }
         }
 
-        // #[ink::test]
+        // #[ink_lang::test]
         // fn post_has_to_be_paid_for() {
         //     let accounts = get_default_test_accounts();
         //     let cost_per_block = 10;
