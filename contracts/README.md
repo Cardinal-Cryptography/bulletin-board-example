@@ -5,6 +5,7 @@
 * [How to write a test asserting the events were emitted.](#testing-the-events-were-emitted)
 * [How to add debug logging to your contract.](#do-logging-in-your-contract)
 * [How to store custom data in `ink!` storage.](#store-custom-data-in-your-contract)
+* [How to instantiate another contract in the constructor](#instantiate-another-contract-in-constructor)
 * [How to transfer tokens as part of a contract call.](#transfer-tokens-as-part-of-a-contract-call)
 * [How to unit test a smart contract.](#unit-test-a-contract)
 * [How to terminate a contract and what does it mean.](#and-why-to-terminate-a-contract)
@@ -118,6 +119,10 @@ test bulletin_board::tests::event_on_post ... ok
 ### store custom data in your contract
 
 Derive (or implement manually) `SpreadLayout` and `PackedLayout` for the structs you want to store as part of the contract. See [`Bulletin`](./bulletin_board/lib.rs#L98) struct and its [usage](./bulletin_board/lib.rs#L124) in the `Mapping` of the `BulletinBoard` contract state.
+
+### instantiate another contract in constructor
+
+All you need is a code hash of the other contract you want to instantiate. See an example of that in [`bulletin_board/lib.rs#new`](./bulletin_board/lib.rs#L148).
 
 ### transfer tokens as part of a contract call
 

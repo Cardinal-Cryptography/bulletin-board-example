@@ -34,7 +34,7 @@ mod bulletin_board {
 
     use ink_lang::{
         codegen::EmitEvent, reflect::ContractEventBase,
-        utils::initialize_contract,
+        utils::initialize_contract, ToAccountId,
     };
     use ink_prelude::{format, string::String};
     use ink_storage::{
@@ -133,13 +133,42 @@ mod bulletin_board {
         // clients (UI clients). For more information see the [documentation](https://use.ink/metadata).
         //
         /// Creates an instance of the bulletin board contract.
-        /// The `price_per_block_listing` specifies the price of listing the
+        /// - `version` is the version of contract's instance. Works also as
+        ///   salt for deployment of `highlighted_posts_board_hash` contract so
+        ///   when `BulletinBoard::new` is called from the same account, use a
+        ///   different `version` to re-instantiate it.
+        /// - `price_per_block_listing` specifies the price of listing the
         /// post for every block.
+        /// - `highlighted_posts_board` argument is a code hash of
+        /// the contract we will instantiate.
         #[ink(constructor)]
         pub fn new(
+            version: u8,
             price_per_block_listing: u128,
-            highlighted_posts_board: AccountId,
+            highlighted_posts_board_hash: Hash,
         ) -> Self {
+            // The `*Ref` pattern allows for type-safe operation on the
+            // contract. Here, we're constructing an instance of
+            // `HighlightedPosts` contract.
+
+            let highlighted_posts_board_ref = HighlightedPostsRef::new()
+                .code_hash(highlighted_posts_board_hash)
+                .salt_bytes(&version.to_le_bytes())
+                .endowment(0)
+                .instantiate()
+                .unwrap_or_else(|error| {
+                    panic!(
+                        "failed to instantiate the `HighlightedPosts` contract: {:?}", error
+                    )
+                });
+
+            // We're mapping back to the `AccountId` so that we can use it in
+            // the `fn fn highlight_post` method down below.
+            let highlighted_posts_board =
+                <HighlightedPostsRef as ToAccountId<
+                    super::bulletin_board::Environment,
+                >>::to_account_id(&highlighted_posts_board_ref);
+
             // This call is required in order to correctly initialize the
             // `Mapping`s of our contract.
             initialize_contract(|instance: &mut BulletinBoard| {
@@ -259,6 +288,12 @@ mod bulletin_board {
             self.bulletin_map.get(&id)
         }
 
+        /// Returns an address of `highlighted_posts` board contract instance.
+        #[ink(message)]
+        pub fn get_highlights_board(&self) -> Option<AccountId> {
+            self.highlighted_posts_board
+        }
+
         // To terminate a contract means to delete it from the blockchain
         // storage. One can choose whether to transfer the contract's
         // balance to others, for example a caller.
@@ -351,7 +386,10 @@ mod bulletin_board {
             }
         }
 
+        /// Calls the `HighlightsBoard` contract to highlight the post by
+        /// `author`.
         // Constructs the cross-contract call using the manual builder pattern.
+        //
         // It's more verbose than the `*Ref` pattern and we need to be more
         // careful to use proper types.
         fn highlight_post(
@@ -383,9 +421,14 @@ mod bulletin_board {
         }
 
         // Constructs the cross-contract call using the `*Ref` pattern.
-        // More type-safe than the manual builder pattern.
-        // NOTE: Currently it does not support transferring tokens, unlike the
-        // builder pattern with `transferred_value` method.
+        // More type-safe than the manual builder pattern. If you expanded the
+        // `#[ink::contract]` macro for this contract, you will find
+        // that `from_account_id` function constructs the `build_call` just like
+        // we did manually in `fn highlight_post`.
+        //
+        // NOTE: Currently `*Ref` wrapper does not support transferring tokens,
+        // unlike the builder pattern with `transferred_value` method
+        // and that's why `highlight_post` uses the builder pattern.
         fn delete_highlight(
             &self,
             author: AccountId,
