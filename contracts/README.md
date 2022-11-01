@@ -15,7 +15,7 @@
 * [How to test cross-contract calls.](#test-a-cross-contract-call)
 * [How to build a contract and optimize it.](#build-your-local-contract-with-optimizations)
 * [How to deploy a contract using Contracts UI. And interact with it.](#deploy-a-contract-using-contracts-ui)
-* How to deploy a contract to custom environment.
+* [How to deploy a contract to custom environment.](#deploying-example-contracts-using-scripts)
 * Various comments through the code of the contract that try to cover basic ink!-specific constructs.
 
 
@@ -88,11 +88,20 @@ For more information about the **Contracts UI**  consult the official documentat
 5. Click on **Upload Contract Bundle** and navigate to `highlighted_posts/target/ink` and choose `highlighted_posts.contract`.
 6. Press **Next** and then again **Next** and **Upload and instantiate**.
 7. Sign the transaction using your account.
-8. In the newly opened page, copy the last hash from the address bar: `https://contracts-ui.substrate.io/contract/<hash>` -- this is the address of your newly created contract.
+8. In the newly opened page, you will see _You instantiated this contract `<contract address>` from `contract name`_. Click on the **contract name** and copy the last hash from the address bar: `https://contracts-ui.substrate.io/instantiate/<hash>` -- this is the code hash of your freshly uploaded contract. Note that it's not an _instance_ of it, just an address where your contract's code lives.
 9. Repeat steps 3-5 for `bulletin_board` contract.
-10. When on **Upload and Instantiate Contract** page, choose **pricePerBlockListing** - this will define how much tokens the caller has to transfer. Change **highlightedPostsBoard** to your newly created contract from step **8**. Click **Next** and upload the second contract.
+10. When on **Upload and Instantiate Contract** page, choose **pricePerBlockListing** - this will define how much tokens the caller has to transfer. Change **highlightedPostsBoard** value to the code hash from step **8**. Click **Next** and upload the second contract.
 
 You have both contracts deployed now. You can play with them, see how they interact with each other, notice how **Contracts UI** will do a _dry-run_ of your calls and show you the expected results even before you decide to do any transaction.
+
+
+### Deploying example contracts using scripts
+
+In `../scripts` folder you will find `deploy_local.sh` and `deploy_testnet.sh` script files that will deploy the examplary project to local or TestNet networks. After the deployment you should see contracts' code hashes and addresses printed to your terminal. You can use them with polkadot.js explorer to interact with the contracts.
+
+Note that for local network there can be only one deployment of the same code (`cargo contract upload`) as subsequent executions would duplicate the code on chain.
+
+For TestNet (or any other network for that matter), you will have to fill in the variables under `./scripts/env/testnet`.
 
 ## How to ...
 
