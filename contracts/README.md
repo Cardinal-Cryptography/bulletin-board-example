@@ -202,6 +202,3 @@ and look at `--optimization-passes` section.
 [OpenBrush](https://openbrush.io/) is a set of libraries created by Supercolony (a very competent team that works with the Parity team on ink!) that tries to cover the places where ink! may be too "raw" for some developers. You may think about it as [OpenZeppelin in ink!](https://medium.com/supercolony/ink-has-most-of-the-features-required-for-usage-however-the-usability-of-ink-is-low-95f4bc974e22).
 
 This is a wide set of tools which, in some cases (like contract traits and other macros), replaces native ink! tooling. This particular template is meant to help developers bootstrap with ink! and leaves the extension to the developer.
-
-### What is `#[ink::trait_definition]` and how to use it.
-### How to upgrade a smart contract.
