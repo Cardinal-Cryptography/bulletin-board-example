@@ -8,8 +8,8 @@
 //! In the constructor of the contract we're instantiating an instance of
 //! "Highlighted Posts board". Note that this will work only if the `code_hash`,
 //! supplied as an argument to the constructor, indeed refers to the expected
-//! contract - otherwise the calls to `highlight_post` and `delete_highlight` will fail as the
-//! receiving contract will not have the expected endpoint.
+//! contract - otherwise the calls to `highlight_post` and `delete_highlight`
+//! will fail as the receiving contract will not have the expected endpoint.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
