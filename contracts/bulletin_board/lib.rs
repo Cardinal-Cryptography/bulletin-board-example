@@ -268,7 +268,7 @@ mod bulletin_board {
             Ok(())
         }
 
-        /// Delets the post from the caller (if exists).
+        /// Deletes the post from the caller (if exists).
         #[ink(message)]
         pub fn delete(&mut self) -> Result<(), BulletinBoardError> {
             let author = Self::env().caller();

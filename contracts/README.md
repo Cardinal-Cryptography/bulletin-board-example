@@ -54,11 +54,11 @@ in respective root folders (`/bulletin_board` and `highlighted_posts`). Verify t
 
 1. Install PolkadotJS browser extension.
 2. Create new account.
-3. Fund the account via Aleph Zero TestNet fauce - https://faucet.test.azero.dev/.
+3. Fund the account via Aleph Zero TestNet faucet - https://faucet.test.azero.dev/.
 
 #### Prerequisities for interacting with Local Node
 
-1. Spin up the local network - follow the [official Aleph Zero guid](https://github.com/Cardinal-Cryptography/aleph-node#local-network).
+1. Spin up the local network - follow the [official Aleph Zero guide](https://github.com/Cardinal-Cryptography/aleph-node#local-network).
 2. Import Alice's key to PolkadotJS browser extension.
     * Open up the PolkadotJS extension, click on the plus sign and _Import account from pre-existing seed_
     * For local Aleph Zero network, we will use one of the pre-funded accounts: Alice. In the _Existing 12 or 24-word mnemonic seed_ paste in the following `0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a`.
@@ -149,7 +149,7 @@ See [`bulletin_board::tests`](./bulletin_board/lib.rs#L493) for various tests, i
 
 If you want to delete an instance of the contract because it's incorrect, no longer needed (and we want to free the storage) or for any other reason we can do it by _terminating_ a contract.
 
-To delete an instance of the contract, call `self.env().terminate_contract(<beneficiar>)`. You can choose the _beneficiary_ that will receive tokens that the contract owns. For the example, see [`terminate_contract`](./bulletin_board/lib.rs#L314).
+To delete an instance of the contract, call `self.env().terminate_contract(<beneficiary>)`. You can choose the _beneficiary_ that will receive tokens that the contract owns. For the example, see [`terminate_contract`](./bulletin_board/lib.rs#L314).
 
 ### `panic!` and when to return a `Result`
 
