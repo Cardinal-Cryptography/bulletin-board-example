@@ -44,7 +44,7 @@ You can build each of the contracts by executing
 cargo contract build --release
 ```
 in respective root folders (`/bulletin_board` and `highlighted_posts`). Verify that the build is successful and there are (among others) three additional files in `<example_contract>/target/ink` directory:
-* `metadata.json` -- contains information about the contract's API and types.
+* `metadata.json` -- contains information about the contract's ABI and types.
 * `*.wasm` -- the actual logic of the contract compiled into WASM code.
 * `*.contract` -- the two above bundled up.
 
@@ -97,11 +97,11 @@ You have both contracts deployed now. You can play with them, see how they inter
 
 ### Deploying example contracts using scripts
 
-In `../scripts` folder you will find `deploy_local.sh` and `deploy_testnet.sh` script files that will deploy the examplary project to local or TestNet networks. After the deployment you should see contracts' code hashes and addresses printed to your terminal. You can use them with polkadot.js explorer to interact with the contracts.
+In `../scripts` folder you will find `deploy_local.sh` and `deploy_Testnet.sh` script files that will deploy the examplary project to local or Testnet networks. After the deployment you should see contracts' code hashes and addresses printed to your terminal. You can use them with polkadot.js explorer to interact with the contracts.
 
 Note that for local network there can be only one deployment of the same code (`cargo contract upload`) as subsequent executions would duplicate the code on chain.
 
-For TestNet (or any other network for that matter), you will have to fill in the variables under `./scripts/env/testnet`.
+For Testnet (or any other network for that matter), you will have to fill in the variables under `./scripts/env/Testnet`.
 
 ## How to ...
 
@@ -159,9 +159,9 @@ The main difference between the two is that `panic!` returns [`ink_env::error::E
 
 ### call another contract and handle the response
 
-Every contract _instance_ is stored under an address of type `AccountId`. To call contract's endpoint you need to know:
+Every contract _instance_ is stored under an address of type `AccountId`. To call contract's method you need to know:
 * its address (`AccountId`)
-* an endpoint we want to call - _selector_ (four bytes identifier of the endpoint)
+* a method we want to call - _selector_ (four bytes identifier of the method)
 * set of arguments and their types
 * return type
 
