@@ -41,12 +41,14 @@ mod highlighted_posts {
     pub enum HighlightedPostsError {
         AlreadyHighlighted,
         HighlightNotFound,
+        AccessDenied,
     }
 
     /// Set of highlighted posts. One per author.
     #[ink(storage)]
     #[derive(SpreadAllocate)]
     pub struct HighlightedPosts {
+        created_by: AccountId,
         highlighted: Mapping<AccountId, u32>,
     }
 
@@ -54,7 +56,10 @@ mod highlighted_posts {
         /// Constructor that initializes the contract with empty map.
         #[ink(constructor)]
         pub fn new() -> Self {
-            initialize_contract(|_| {})
+            let caller = Self::env().caller();
+            initialize_contract(|instance: &mut HighlightedPosts| {
+                instance.created_by = caller;
+            })
         }
 
         /// Adds the post to the highlighted set.
@@ -64,6 +69,9 @@ mod highlighted_posts {
             author: AccountId,
             id: u32,
         ) -> Result<(), HighlightedPostsError> {
+            if Self::env().caller() != self.created_by {
+                return Err(HighlightedPostsError::AccessDenied)
+            }
             if self.highlighted.contains(author) {
                 return Result::Err(HighlightedPostsError::AlreadyHighlighted);
             } else {
@@ -92,6 +100,9 @@ mod highlighted_posts {
             &mut self,
             author: AccountId,
         ) -> Result<(), HighlightedPostsError> {
+            if Self::env().caller() != self.created_by {
+                return Err(HighlightedPostsError::AccessDenied)
+            }
             if !self.highlighted.contains(author) {
                 return Err(HighlightedPostsError::HighlightNotFound);
             } else {
@@ -102,6 +113,12 @@ mod highlighted_posts {
                 );
                 Ok(())
             }
+        }
+
+        /// Returns an address of the contract/account that instantiated this instance.
+        #[ink(message)]
+        pub fn created_by(&self) -> AccountId {
+            self.created_by
         }
 
         // We need this helper method for emitting events (rather than
