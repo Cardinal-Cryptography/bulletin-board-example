@@ -172,8 +172,6 @@ Calling another contract can be currently made in two ways:
 
 Both approaches, if done correctly, provide a typed access to another contract.
 
-### test a cross-contract call
-
 ### build your local contract with optimizations
 
 First, make sure you have the necessary tools installed - see [setup](#setup). 

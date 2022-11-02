@@ -702,41 +702,5 @@ mod bulletin_board {
                 panic!("encountered unexpected event kind: expected `BulletinRemoved`")
             }
         }
-
-        // #[ink_lang::test]
-        // fn post_has_to_be_paid_for() {
-        //     let accounts = get_default_test_accounts();
-        //     let cost_per_block = 10;
-        //     let mut instance = BulletinBoard::new(cost_per_block);
-        //     let expires_after = 100;
-        //     let expected_listing_cost = cost_per_block * expires_after;
-        //     let text: ink_prelude::string::String = "Text".into();
-        //     let pre_post_balance = get_balance(accounts.alice);
-        //     assert!(
-        //         matches!(
-        //             instance.post(expires_after as BlockNumber,
-        // text.clone()),
-        // Result::Err(BulletinBoardError::ListingCostTooLow(listing_cost)) if
-        // listing_cost == expected_listing_cost         ),
-        //         "posting was expected to fail"
-        //     );
-        //     assert_eq!(
-        //         pre_post_balance,
-        //         get_balance(accounts.alice),
-        //         "failed transaction shouldn't transfer"
-        //     );
-        //     // To emulate method invocation with value(token) transfer we use
-        //     // `pay_with_call!` macro.
-        //     let post_result = ink_env::pay_with_call!(
-        //         instance.post(expires_after as BlockNumber, text),
-        //         expected_listing_cost
-        //     );
-        //     assert!(post_result.is_ok());
-        //     assert_eq!(
-        //         get_balance(accounts.alice),
-        //         pre_post_balance + expected_listing_cost,
-        //         "Alice's balance should decrease by the cost listing",
-        //     );
-        // }
     }
 }
