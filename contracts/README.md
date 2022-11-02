@@ -105,7 +105,7 @@ For Testnet (or any other network for that matter), you will have to fill in the
 
 ## How to ...
 
-### emit events and verify in tests you did
+### Emit events and verify in tests you did
 
 #### Creating and emitting events
 See `lib.rs` for `#[ink(event)]` on how to define it and [`fn emit_event`](./bulletin_board/lib.rs#L462) to see how to emit it.
@@ -116,7 +116,7 @@ See `lib.rs` for `#[ink(event)]` on how to define it and [`fn emit_event`](./bul
 
 In `lib.rs` look for calls to [`recorded_events()`](./bulletin_board/lib.rs#L579), to collect the emitted events, and [`assert_expected_*_event`](./bulletin_board/lib.rs#L580) to test whether we got the expected ones.
 
-### do logging in your contract
+### Do logging in your contract
 
 In `lib.rs` see [invocation](./bulletin_board/lib.rs#L233) of `ink_env::debug_println!` - this will produce a log message when ran in test. To verify, run [`event_on_post`](./bulletin_board/lib.rs#L574) test and observe the following log:
 ```shell
@@ -127,25 +127,25 @@ test bulletin_board::tests::event_on_post ... ok
 
 If you build your contract in debug mode (i.e. without `--release` flag), then the debugging prints will also be visible in **Contracts UI** frontend.
 
-### store custom data in your contract
+### Store custom data in your contract
 
 Derive (or implement manually) `SpreadLayout` and `PackedLayout` for the structs you want to store as part of the contract. See [`Bulletin`](./bulletin_board/lib.rs#L108)struct and its [usage](./bulletin_board/lib.rs#L134) in the `Mapping` of the `BulletinBoard` contract state.
 
-### instantiate another contract in constructor
+### Instantiate another contract in constructor
 
 All you need is a code hash of the other contract you want to instantiate. See an example of that in [`bulletin_board/lib.rs#new`](./bulletin_board/lib.rs#L156).
 
-### transfer tokens as part of a contract call
+### Transfer tokens as part of a contract call
 
 If you want your method to accept token transfer, you need to tag it with `payable` keyword: `#[ink(payable)]`. See [`BulletinBoard::post`](./bulletin_board/lib.rs#L222) for an example.
 
 For an example on how to do a cross-contract call _and_ transfer tokens, see [`highlight_post`](./bulletin_board/lib.rs#L406).
 
-### unit test a contract
+### Unit test a contract
 
 See [`bulletin_board::tests`](./bulletin_board/lib.rs#L493) for various tests, including mocking the blockchain environment - setting caller, token balance, etc.
 
-### (and why) to terminate a contract
+### Terminate a contract (and why)
 
 If you want to delete an instance of the contract because it's incorrect, no longer needed (and we want to free the storage) or for any other reason we can do it by _terminating_ a contract.
 
@@ -157,7 +157,7 @@ To terminate your contract execution you can either panic (via `panic!`, `assert
 
 The main difference between the two is that `panic!` returns [`ink_env::error::Error::CalleeTrapped`](https://docs.rs/ink_env/3.4.0/ink_env/enum.Error.html#variant.CalleeTrapped), which carries no additional context, while your custom error (returned via `Result::Err(MyError)`) does. It makes it easier for the caller to handle the failure (if it knows the reason, it can decide what to do) and also provides more helpfull messages in UI clients since the custom error can be shown to the user.
 
-### call another contract and handle the response
+### Call another contract and handle the response
 
 Every contract _instance_ is stored under an address of type `AccountId`. To call contract's method you need to know:
 * its address (`AccountId`)
@@ -172,7 +172,7 @@ Calling another contract can be currently made in two ways:
 
 Both approaches, if done correctly, provide a typed access to another contract.
 
-### build your local contract with optimizations
+### Build your local contract with optimizations
 
 First, make sure you have the necessary tools installed - see [setup](#setup). 
 
