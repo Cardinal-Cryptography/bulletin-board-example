@@ -213,9 +213,9 @@ dependencies = [
 
 [[package]]
 name = "ink_env"
-version = "3.3.1"
+version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "271689b643d7ccf2bcd09d7ef07eda79cd3366ee042d5bbfcebf534b08da79d7"
+checksum = "a891d34301a3dbb1c7b7424c49ae184282b163491c54f9acd17fcbe14a80447b"
 dependencies = [
  "arrayref",
  "blake2",
@@ -240,9 +240,9 @@ dependencies = [
 
 [[package]]
 name = "ink_lang"
-version = "3.3.1"
+version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62cf662fe6a130ea1ada3520142405e3ed521b79c35b7274cc95dd37bc833571"
+checksum = "cca26e374e0f89c82cf5dabb4309ef3c76a01659ad95186f4e84455c5f4621a0"
 dependencies = [
  "derive_more",
  "ink_env",
@@ -288,9 +288,9 @@ dependencies = [
 
 [[package]]
 name = "ink_lang_macro"
-version = "3.3.1"
+version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1330da0b8007b86de94f95fbc74769c0461d3b078b291af5497771598db1c5b4"
+checksum = "81b858be42ac6cde2c15ce6d7fa75cef59b64a3baf37f7105f39208f2b84dadb"
 dependencies = [
  "ink_lang_codegen",
  "ink_lang_ir",
@@ -302,9 +302,9 @@ dependencies = [
 
 [[package]]
 name = "ink_metadata"
-version = "3.3.1"
+version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d442f4f5dcbf120aa84cae9e399065ad99d143d5a920b06d3da286e91c03ec70"
+checksum = "74913aaed5751f5615af4631b7559328b8ed56c9cb821b89e14af0706176e849"
 dependencies = [
  "derive_more",
  "impl-serde",
@@ -325,9 +325,9 @@ dependencies = [
 
 [[package]]
 name = "ink_primitives"
-version = "3.3.1"
+version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea7afd5330a9d3be1533222a48b8ab44b3a3356a5e6bb090bff0790aa562b418"
+checksum = "e12cf42dce81d060401c7cec95a392ad6d3c2f18661fa3083f619ce135133c33"
 dependencies = [
  "cfg-if",
  "ink_prelude",
@@ -337,9 +337,9 @@ dependencies = [
 
 [[package]]
 name = "ink_storage"
-version = "3.3.1"
+version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "be827b98c102c413b2309075f0835a9bb8c6325fc6aa09e66963424db7a8bcb5"
+checksum = "9c0a98b6acbd79eedf44720412437d713e7195d1407822604de5885b0ee6c7e1"
 dependencies = [
  "array-init",
  "cfg-if",
