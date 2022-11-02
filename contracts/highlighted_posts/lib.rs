@@ -17,10 +17,10 @@ mod highlighted_posts {
     // They can be found by expanding the `#[ink::contract]` macro.
 
     pub const HIGHLIGHT_POST_SELECTOR: [u8; 4] =
-        [0x4B_u8, 0x05_u8, 0x0E_u8, 0xA9_u8];
+        [0, 0, 0, 7];
 
     pub const DELETE_HIGHLIGHT_SELECTOR: [u8; 4] =
-        [0xEB_u8, 0x34_u8, 0xEF_u8, 0x93_u8];
+        [0, 0, 0, 8];
 
     type Event =
         <HighlightedPosts as ink_lang::reflect::ContractEventBase>::Type;
@@ -63,7 +63,7 @@ mod highlighted_posts {
         }
 
         /// Adds the post to the highlighted set.
-        #[ink(message, payable)]
+        #[ink(message, payable, selector = 7)]
         pub fn add(
             &mut self,
             author: AccountId,
@@ -95,7 +95,7 @@ mod highlighted_posts {
         /// NOTE: This is rather unrealistic example where *anyone* can remove
         /// any post but this contract is only meant to show how to do
         /// cross-contract calls.
-        #[ink(message)]
+        #[ink(message, selector = 8)]
         pub fn delete_by_author(
             &mut self,
             author: AccountId,
