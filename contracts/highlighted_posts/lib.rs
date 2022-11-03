@@ -12,7 +12,7 @@ mod highlighted_posts {
     use ink_lang::{codegen::EmitEvent, utils::initialize_contract};
     use ink_storage::{traits::SpreadAllocate, Mapping};
 
-    // Selectors are short byte arrays that uniquely identify the entrypoints of
+    // Selectors are short byte arrays that uniquely identify the methods of
     // the contract. We need them to construct the `CallBuilder` instance.
     // They can be found by expanding the `#[ink::contract]` macro.
 

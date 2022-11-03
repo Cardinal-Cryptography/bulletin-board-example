@@ -25,13 +25,13 @@ Let's start..
 
 ### Install Rust & Cargo
 
-A pre-requisite is to have Rust and Cargo installed. Please follow [the official guide](https://doc.rust-lang.org/cargo/getting-started/installation.html).
+A prerequisite is to have Rust and Cargo installed. Please follow [the official guide](https://doc.rust-lang.org/cargo/getting-started/installation.html).
 
 ### ink!
 
-We will nede to install ink! dependencies: binaryen, and ink! contract linters. Finally a `cargo contract`. All these steps are described in the [ink! documentation](https://doc.rust-lang.org/cargo/getting-started/installation.html).
+We will need to install ink! dependencies: binaryen, and ink! contract linters. Finally a `cargo contract`. All these steps are described in the [ink! documentation](https://doc.rust-lang.org/cargo/getting-started/installation.html).
 
-## Example contracts.
+## Example contracts
 
 This repository contains two example smart contracts:
 * `/bulletin_board` - a smart contract that allows for posting bulletins with text (one per calling account).
@@ -45,7 +45,7 @@ cargo contract build --release
 ```
 in respective root folders (`/bulletin_board` and `highlighted_posts`). Verify that the build is successful and there are (among others) three additional files in `<example_contract>/target/ink` directory:
 * `metadata.json` -- contains information about the contract's API and types.
-* `*.wasm` -- actual logic of the contract.
+* `*.wasm` -- the actual logic of the contract compiled into WASM code.
 * `*.contract` -- the two above bundled up.
 
 ### Deploying
@@ -54,7 +54,7 @@ in respective root folders (`/bulletin_board` and `highlighted_posts`). Verify t
 
 1. Install PolkadotJS browser extension.
 2. Create new account.
-3. Fund the account via Aleph Zero TestNet faucet - https://faucet.test.azero.dev/.
+3. Fund the account via [Aleph Zero Testnet faucet](https://faucet.test.azero.dev/).
 
 #### Prerequisities for interacting with Local Node
 
@@ -153,9 +153,9 @@ To delete an instance of the contract, call `self.env().terminate_contract(<bene
 
 ### `panic!` and when to return a `Result`
 
-To terminate your contract execution you can either panic (via `panic!`, `assert`, `require!`, etc.) or return a rust `Result` type from your method. Both will signal to the caller that the call failed. Both will revert any changes to the state of _your_ contract.
+To terminate your contract execution you can either panic (via `panic!`, `assert`, `require!`, etc.) or return a rust `Result` type (with `Err` variant) from your method. Both will signal to the caller that the call failed. Both will revert any changes to the state of _the current_ contract.
 
-The main difference between the two is that `panic!` returns [`ink_env::error::Error::CalleeTrapped`](https://docs.rs/ink_env/3.4.0/ink_env/enum.Error.html#variant.CalleeTrapped), which carries no additional context, while your custom error (returned via `Result::Err(MyError)`) does. It makes it easier for the caller to handle the failure (if he knows the reason he can decide what to do with it) and also provides more helpfull messages in UI clients since the custom error can be shown to the user.
+The main difference between the two is that `panic!` returns [`ink_env::error::Error::CalleeTrapped`](https://docs.rs/ink_env/3.4.0/ink_env/enum.Error.html#variant.CalleeTrapped), which carries no additional context, while your custom error (returned via `Result::Err(MyError)`) does. It makes it easier for the caller to handle the failure (if it knows the reason, it can decide what to do) and also provides more helpfull messages in UI clients since the custom error can be shown to the user.
 
 ### call another contract and handle the response
 
