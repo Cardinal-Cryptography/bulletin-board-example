@@ -15,7 +15,7 @@
 
 // An entrypoint to all ink! smart contracts.
 // When expanded, this macro will:
-// * Add local type aliases to the `mod notice_pillar`, like `Environment`,
+// * Add local type aliases to the `mod bulletin_board`, like `Environment`,
 //   `AccountId`, `Balance`, `Hash`, `Timestamp` and `BlockNumber`. All will
 //   resolve to defaults `ink_env::DefaultEnvironment::<type>`
 // * Adds useful #[doc] macros
@@ -191,7 +191,10 @@ mod bulletin_board {
             })
         }
 
-        // Constructors can delegate to other constructors.
+        // Contracts can have multiple constructors. You can choose which to use
+        // when instantiating a contract.
+        /// Creates an instance of `BulletinBoard` contract where posting is
+        /// "free".
         #[ink(constructor)]
         pub fn free() -> Self {
             initialize_contract(|instance: &mut BulletinBoard| {
