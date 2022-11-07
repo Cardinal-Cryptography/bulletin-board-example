@@ -18,8 +18,8 @@ scale-info = { version = "2", default-features = false, features = ["derive"], o
 name = "highlighted_posts"
 path = "lib.rs"
 crate-type = [
-	# Used for normal contract Wasm blobs.
-	"cdylib",
+    # Used for normal contract Wasm blobs.
+    "cdylib",
     # Used for ABI generation and for unit test.
     "rlib",
 ]

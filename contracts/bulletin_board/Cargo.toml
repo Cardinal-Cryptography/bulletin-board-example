@@ -24,8 +24,8 @@ highlighted_posts = { path = "../highlighted_posts", default-features = false, f
 name = "bulletin_board"
 path = "lib.rs"
 crate-type = [
-	# Used for normal contract Wasm blobs.
-	"cdylib",
+    # Used for normal contract Wasm blobs.
+    "cdylib",
     # Used for ABI generation and for unit test.
     "rlib",
 ]

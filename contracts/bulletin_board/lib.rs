@@ -70,6 +70,8 @@ mod bulletin_board {
         // different contract.
         HighlightError(HighlightedPostsError),
         /// An interaction with ink! environment has failed
+        // NOTE: We're representing the `ink_env::Error` as `String` b/c the
+        // type does not have Encode/Decode implemented.
         InkEnvError(String),
     }
 
@@ -109,6 +111,7 @@ mod bulletin_board {
         author: AccountId,
         posted_at: BlockNumber,
         expires_at: BlockNumber,
+        // NOTE: `String` type here is ink!'s wrapper for `Vec<u8>`.
         text: String,
     }
 
@@ -164,8 +167,11 @@ mod bulletin_board {
 
             let highlighted_posts_board_ref = HighlightedPostsRef::new()
                 .code_hash(highlighted_posts_board_hash)
-                .salt_bytes(&version.to_le_bytes())
-                .endowment(0)
+                .salt_bytes([version.to_le_bytes().as_ref(), Self::env().caller().as_ref()].concat())
+                .endowment(0) /* Amount of value transferred as part of the call. 
+                               * It should not be required but the API of `*Ref` pattern 
+                               * does not allow for calling `instantiate()` 
+                               * on a builder where `endowment` is not set.*/
                 .instantiate()
                 .unwrap_or_else(|error| {
                     panic!(

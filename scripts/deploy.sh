@@ -23,4 +23,5 @@ BULLETIN_BOARD=$(cargo contract instantiate --url "$NODE_URL" --suri "$AUTHORITY
 # `cargo contract` prints the first one, rather than the last one, so we have to extract it from the events.
 BULLETIN_BOARD=$(echo "$BULLETIN_BOARD" | grep -A3 "Event Contracts ➜ Instantiated" | grep contract | tail -1 | cut -d ' ' -f11)
 echo "Bulletin board instance address: $BULLETIN_BOARD"
-
+HIGHLIGHTED_POSTS_INSTANCE=$(cargo contract call --url "$NODE_URL" --suri "$AUTHORITY_SEED" call -m get_highlights_board --skip-confirm --quiet --dry-run | grep Data | grep -Poe "Some\(\K[a-zA-Z0-9]+")
+echo "Highlighted posts instance address: $BULLETIN_BOARD"
