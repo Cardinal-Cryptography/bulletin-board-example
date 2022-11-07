@@ -22,7 +22,7 @@ Let's start..
 
 ## Setting up the environment
 
-To set up the environment before, please follow the guide from [our documentation](https://docs.alephzero.org/smart-contracts-tutorial/installing-required-tools).
+To set up the environment before, please follow the guide from [our documentation](https://docs.alephzero.org/aleph-zero/build/installing-required-tools).
 
 ## Example contracts
 

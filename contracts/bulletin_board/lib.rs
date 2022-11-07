@@ -174,7 +174,7 @@ mod bulletin_board {
                 });
 
             // We're mapping back to the `AccountId` so that we can use it in
-            // the `fn fn highlight_post` method down below.
+            // the `highlight_post` method down below.
             let highlighted_posts_board =
                 <HighlightedPostsRef as ToAccountId<
                     super::bulletin_board::Environment,
