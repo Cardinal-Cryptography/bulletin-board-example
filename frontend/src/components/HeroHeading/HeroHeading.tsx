@@ -41,26 +41,20 @@ const HeroHeading = ({ variant }: { variant: Variant }) => (
     {variant === 'browse' && (
       <HeroHeadingWrapper>
         <h2>Browse</h2>
-        <p>
-          Browse already posted texts. Remember there's only one per user.
-        </p>
+        <p>Browse already posted texts. Remember there&apos;s only one per user.</p>
       </HeroHeadingWrapper>
     )}
     {variant === 'post' && (
       <HeroHeadingWrapper>
-      <h2>Post</h2>
-      <p>
-        Here you can post your own texts on chain. Remember to connect your wallet first!
-      </p>
-    </HeroHeadingWrapper>
+        <h2>Post</h2>
+        <p>Here you can post your own texts on chain. Remember to connect your wallet first!</p>
+      </HeroHeadingWrapper>
     )}
     {variant === 'another' && (
       <HeroHeadingWrapper>
-      <h2>This is h2 in HeroHeading</h2>
-      <p>
-        And some text.
-      </p>
-    </HeroHeadingWrapper>
+        <h2>This is h2 in HeroHeading</h2>
+        <p>And some text.</p>
+      </HeroHeadingWrapper>
     )}
   </>
 );
