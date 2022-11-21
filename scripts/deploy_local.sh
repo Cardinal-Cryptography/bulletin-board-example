@@ -4,5 +4,4 @@ set -euo pipefail
 
 source $(pwd)/scripts/env/local
 
-$(pwd)/scripts/deploy.sh
-
+$(pwd)/scripts/_deploy.sh
