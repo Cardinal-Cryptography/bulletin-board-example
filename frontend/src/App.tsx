@@ -6,22 +6,21 @@ import { Provider as ReduxProvider } from 'react-redux';
 
 import './App.css';
 import { displayErrorToast } from 'components/NotificationToast';
-
 import PostPage from 'components/PostPage';
 import BulletinBoard from 'components/BulletinBoard';
+import AnotherNavBarPage from 'components/AnotherNavBarPage';
 
 import formatChainStringToNumber from 'utils/formatChainStringToNumber';
 import { ErrorToastMessages } from 'shared/constants/index';
 
 import store from './redux/store';
-import AnotherNavBarPage from 'components/AnotherNavBarPage';
 
 const INTERCOM_APP_ID = process.env.REACT_APP_INTERCOM_APP_ID ?? '';
 
 const App = (): JSX.Element => {
-  const [api, setApi] = useState<ApiPromise | null>(null);
-  const [lastChainBlock, setLastChainBlock] = useState<number | null>(null);
-  const [lastBlockParent, setLastlastBlockParent] = useState<string | null>(null);
+  const [, setApi] = useState<ApiPromise | null>(null);
+  const [, setLastChainBlock] = useState<number | null>(null);
+  const [, setLastlastBlockParent] = useState<string | null>(null);
 
   useEffect(() => {
     const setupProvider = async () => {
@@ -49,19 +48,16 @@ const App = (): JSX.Element => {
 
   return (
     <ReduxProvider store={store}>
-        <IntercomProvider appId={INTERCOM_APP_ID} autoBoot>
-          <Router>
-            <Routes>
-              <Route
-                path="/browse"
-                element={<BulletinBoard api={api} lastChainBlock={lastChainBlock} />}
-              />
-              <Route path="/post" element={<PostPage api={api}/>}/>
-              <Route path="/another" element={<AnotherNavBarPage api={api} />}/>
-              <Route path="*" element={<Navigate to="/browse" replace />} />
-            </Routes>
-          </Router>
-        </IntercomProvider>
+      <IntercomProvider appId={INTERCOM_APP_ID} autoBoot>
+        <Router>
+          <Routes>
+            <Route path="/browse" element={<BulletinBoard />} />
+            <Route path="/post" element={<PostPage />} />
+            <Route path="/another" element={<AnotherNavBarPage />} />
+            <Route path="*" element={<Navigate to="/browse" replace />} />
+          </Routes>
+        </Router>
+      </IntercomProvider>
     </ReduxProvider>
   );
 };

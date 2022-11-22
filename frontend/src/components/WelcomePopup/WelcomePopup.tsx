@@ -154,11 +154,10 @@ const WelcomePopup = (): JSX.Element => {
         <div className="content-right">
           <CopyContainer>
             <p>
-              This is a WelcomePopup in the example frontend for dApps created on Aleph Zero network.
+              This is a WelcomePopup in the example frontend for dApps created on Aleph Zero
+              network.
             </p>
-            <p>
-              This is another paragraph in the popup.
-            </p>
+            <p>This is another paragraph in the popup.</p>
           </CopyContainer>
           <Button>
             <span>Put your link here. If you want :) </span>

@@ -1,1 +1,1 @@
-export { default } from './AnotherNavBarPage'
+export { default } from './AnotherNavBarPage';

@@ -1,11 +1,11 @@
-import HeroHeading from 'components/HeroHeading';
-import Layout from 'components/Layout';
-import SectionHeader from 'components/SectionHeader';
-import { queries } from 'shared/layout';
+import React from 'react';
 import styled from 'styled-components';
-import getWalletAddressShort from 'utils/getWalletAddressShort';
-import HighlightsRow from './HighlightsRow';
 
+import SectionHeader from 'components/SectionHeader';
+
+import { queries } from 'shared/layout';
+
+import HighlightsRow from './HighlightsRow';
 
 const HighlightsListWrapper = styled.div`
   width: 100%;
@@ -65,7 +65,6 @@ const HighlightsListWrapper = styled.div`
   }
 `;
 
-
 const HighlightsBoardContainer = styled.div`
   margin-bottom: 88px;
   display: grid;
@@ -121,7 +120,6 @@ const HighlightsPlaceholder = styled.div`
   line-height: 125%;
 `;
 
-
 const HighlightsHeaderWrapper = styled.div`
   z-index: 5;
   margin-top: 58px;
@@ -146,52 +144,55 @@ interface HighlightsListProps {
   walletAddress?: string;
 }
 
-
 interface Highlight {
-  author: string,
-  id: number,
-  text: string,
+  author: string;
+  id: number;
+  text: string;
 }
 
-const top_highlights: Highlight[] = [
-  { author: "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY", id: 1, text: "Test text" },
-  { author: "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKut1Y", id: 2, text: "Test text" }
+const topHighlights: Highlight[] = [
+  { author: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY', id: 1, text: 'Test text' },
+  { author: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKut1Y', id: 2, text: 'Test text' },
 ];
 
+const HighlightsList = ({ walletAddress }: HighlightsListProps): JSX.Element => (
+  <HighlightsListWrapper className={topHighlights?.length ? 'no-space-right' : ''}>
+    <div className="background-gradient" />
+    <HighlightsHeaderWrapper>
+      <SectionHeader>
+        Top 10 <span>highlights</span>
+      </SectionHeader>
+    </HighlightsHeaderWrapper>
 
-const HighlightsList = ({ walletAddress }: HighlightsListProps): JSX.Element => {
-  return (
-    <HighlightsListWrapper className={top_highlights?.length ? 'no-space-right' : ''}>
-      <div className="background-gradient" />
-      <HighlightsHeaderWrapper>
-        <SectionHeader>
-          Top 10 <span>highlights</span>
-        </SectionHeader>
-      </HighlightsHeaderWrapper>
+    {!!topHighlights?.length && (
+      <HighlightsBoardContainer>
+        <HighlightsBoardHeading className="board-row">
+          <p>#</p>
+          <div>
+            <p>Wallet address</p>
+            <p>Text</p>
+            <p>Bulletin ID</p>
+          </div>
+        </HighlightsBoardHeading>
+        {topHighlights.map(({ author, id, text }, index) => (
+          <HighlightsRow
+            walletAddress={walletAddress}
+            author={author}
+            id={id}
+            text={text}
+            position={index + 1}
+            key={id}
+          />
+        ))}
+      </HighlightsBoardContainer>
+    )}
 
-      {!!top_highlights?.length && (
-        <HighlightsBoardContainer>
-          <HighlightsBoardHeading className="board-row">
-            <p>#</p>
-            <div>
-              <p>Wallet address</p>
-              <p>Text</p>
-              <p>Bulletin ID</p>
-            </div>
-          </HighlightsBoardHeading>
-          {top_highlights.map(({ author, id, text }, index) => (
-            <HighlightsRow walletAddress={walletAddress} author={author} id={id} text={text} position={index + 1} />
-          ))}
-        </HighlightsBoardContainer>
-      )}
-
-      {!top_highlights?.length && (
-        <HighlightsPlaceholder>
-          {<p>No records yet</p>}
-        </HighlightsPlaceholder>
-      )}
-    </HighlightsListWrapper>
-  );
-};
+    {!topHighlights?.length && (
+      <HighlightsPlaceholder>
+        <p>No records yet</p>
+      </HighlightsPlaceholder>
+    )}
+  </HighlightsListWrapper>
+);
 
 export default HighlightsList;

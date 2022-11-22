@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import HamburgerMenuIcon from 'components/HamburgerMenuIcon';
+import WalletButton from 'components/Wallet/WalletButton';
 
 import { queries } from 'shared/layout';
 import { ReactComponent as Icon } from 'assets/AlephZeroLogo.svg';
 import { ReactComponent as IconLetter } from 'assets/AlephLetterLogo.svg';
-import WalletButton from 'components/Wallet/WalletButton';
 
 const NavBar = styled.nav`
   height: 64px;
@@ -68,7 +68,6 @@ const NavlinksWrapper = styled.div`
   }
 `;
 
-
 const MenuMobile = styled.nav`
   width: 100vw;
   height: calc(100vh - 64px);
@@ -118,7 +117,7 @@ const Navbar = ({ setIsAccountsModalVisible, loggedAccountAddress }: NavbarProps
   };
 
   const onSetMobileNavClosed = () => {
-    setIsMobileNavOpen(false)
+    setIsMobileNavOpen(false);
   };
 
   return (
@@ -128,10 +127,11 @@ const Navbar = ({ setIsAccountsModalVisible, loggedAccountAddress }: NavbarProps
       <NavlinksWrapper>
         <NavLinks />
       </NavlinksWrapper>
-      <WalletButton 
-        setIsAccountsModalVisible={setIsAccountsModalVisible} 
-        setIsMobileNavClosed={onSetMobileNavClosed} 
-        loggedAccountAddress={loggedAccountAddress} />
+      <WalletButton
+        setIsAccountsModalVisible={setIsAccountsModalVisible}
+        setIsMobileNavClosed={onSetMobileNavClosed}
+        loggedAccountAddress={loggedAccountAddress}
+      />
       <HamburgerMenuIcon onButtonClick={onMobileBtnClick} isOpen={isMobileNavOpen} />
       <MenuMobile className={isMobileNavOpen ? 'open' : 'closed'}>
         <NavLinks />

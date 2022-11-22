@@ -1,1 +1,1 @@
-export { default } from './HighlightsRow'
+export { default } from './HighlightsRow';

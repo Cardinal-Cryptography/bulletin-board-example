@@ -63,8 +63,7 @@ const NotificationToast = (): JSX.Element => <CustomToast position="top-center" 
 
 export const displaySuccessToast = (): void => {
   const toastHeading = "I'm a success toast heading, find me in displaySuccessToast method";
-  const toastParagraph =
-    "I'm a success toastParagraph in displaySuccessToast";
+  const toastParagraph = "I'm a success toastParagraph in displaySuccessToast";
   toast(
     <ToastMessage toastType="success" toastHeading={toastHeading} toastParagraph={toastParagraph} />
   );
@@ -74,7 +73,7 @@ export const displayWarningToast = (): void => {
   const toastHeading = "I'm a warning toastHeading, find me in displayWarningToast method";
   const toastParagraph = (
     <span>
-      I'm a warning toastParagraph, find me in displayWarningToast method&nbsp;
+      I&apos;m a warning toastParagraph, find me in displayWarningToast method&nbsp;
       <span className="message-link">Marketplace</span>.
     </span>
   );
