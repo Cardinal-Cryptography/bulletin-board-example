@@ -23,7 +23,6 @@ const Wrapper = styled.div`
   gap: 24px;
   justify-content: center;
   grid-template-columns: repeat(12, 1fr);
-  width: calc(100% - 48px);
   padding: 24px;
 
   ${queries.desktop} {

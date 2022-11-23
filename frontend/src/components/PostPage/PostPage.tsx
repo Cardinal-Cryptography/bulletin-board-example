@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { ApiPromise } from '@polkadot/api';
+import { useSelector } from 'react-redux';
 
 import Layout from 'components/Layout';
 import HeroHeading from 'components/HeroHeading';
 
 import { queries } from 'shared/layout';
 import { getHighlightPricePerBlock } from 'utils/getHighlightPricePerBlock';
-import { ApiPromise } from '@polkadot/api';
-import { useSelector } from 'react-redux';
 import { RootState } from 'redux/store';
 import { sendPost } from 'utils/sendPost';
 
@@ -51,6 +51,12 @@ const Wrapper = styled.div`
         accent-color: ${({ theme }) => theme.colors.primary};
         width: 20px;
       }
+    }
+
+    input[type='text'],
+    input[type='number'] {
+      padding: 10px;
+      border-radius: 10px;
     }
 
     p {

@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, current } from '@reduxjs/toolkit';
 
 import { PostByAccount } from 'utils/getPostByAccount';
 
@@ -10,15 +10,16 @@ const initialState: InitialState = {
   posts: [],
 };
 
-export const welcomePopupSlice = createSlice({
-  name: 'welcomePopup',
+export const postsSlice = createSlice({
+  name: 'posts',
   initialState,
   reducers: {
     addPost: (state, action) => {
       state.posts.push(action.payload);
     },
     setAllPosts: (state, action) => {
-      state.posts = action.payload;
+      state.posts.splice(0, current(state).posts.length);
+      state.posts.push(...action.payload);
     },
     removePost: (state, action) => {
       const filteredArray = state.posts.filter((post) => post.author !== action.payload);
@@ -27,5 +28,5 @@ export const welcomePopupSlice = createSlice({
   },
 });
 
-export const { addPost, removePost, setAllPosts } = welcomePopupSlice.actions;
-export default welcomePopupSlice.reducer;
+export const { addPost, removePost, setAllPosts } = postsSlice.actions;
+export default postsSlice.reducer;

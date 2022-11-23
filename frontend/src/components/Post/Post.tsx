@@ -10,7 +10,6 @@ const PostWrapper = styled.div`
   height: max-content;
   border: 2px solid ${({ theme }) => theme.colors.night[300]};
   border-radius: 2px;
-  padding: 1rem 1rem;
   display: flex;
   flex-direction: column;
 
@@ -21,6 +20,16 @@ const PostWrapper = styled.div`
   h3 {
     align-self: center;
     font-weight: 500;
+    padding: 20px;
+  }
+
+  .post-bottom {
+    min-height: 60px;
+    padding: 10px;
+    background-color: ${({ theme }) => theme.colors.night[300]};
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   p {
@@ -46,7 +55,6 @@ const PostWrapper = styled.div`
     transition: background-color 0.4s ease, opacity 0.4s ease;
     will-change: background-color, opacity;
     justify-self: center;
-    align-self: flex-end;
 
     &:hover {
       background: ${({ theme }) => theme.colors.button.secondaryHover};
@@ -67,14 +75,16 @@ const Post = ({ author, text, onPostDelete }: PostProps): JSX.Element => {
   return (
     <PostWrapper className={`${isAuthor ? 'own-post' : ''}`}>
       <h3>{text}</h3>
-      <p>
-        <span>author:</span> {getWalletAddressShort(author)}
-      </p>
-      {isAuthor && (
-        <button type="button" onClick={() => onPostDelete(author)}>
-          Delete
-        </button>
-      )}
+      <div className="post-bottom">
+        <p>
+          <span>author:</span> {getWalletAddressShort(author)}
+        </p>
+        {isAuthor && (
+          <button type="button" onClick={() => onPostDelete(author)}>
+            Delete
+          </button>
+        )}
+      </div>
     </PostWrapper>
   );
 };
