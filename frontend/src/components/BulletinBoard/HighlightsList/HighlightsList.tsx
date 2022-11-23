@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { ApiPromise } from '@polkadot/api';
 import styled from 'styled-components';
 
 import SectionHeader from 'components/SectionHeader';
 
 import { queries } from 'shared/layout';
+import { getPostByAccount, PostByAccount } from 'utils/getPostByAccount';
+import { getHighlightedPostsAuthors } from 'utils/getHighlightedPostsAuthors';
 
 import HighlightsRow from './HighlightsRow';
 
@@ -141,58 +144,67 @@ const HighlightsBoardHeading = styled.div`
 `;
 
 interface HighlightsListProps {
-  walletAddress?: string;
+  api: ApiPromise;
 }
 
-interface Highlight {
-  author: string;
-  id: number;
-  text: string;
-}
+const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
+  const [highlightedPosts, setHighlightedPosts] = useState<PostByAccount[]>([]);
 
-const topHighlights: Highlight[] = [
-  { author: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY', id: 1, text: 'Test text' },
-  { author: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKut1Y', id: 2, text: 'Test text' },
-];
+  useEffect(() => {
+    const allPosts: PostByAccount[] = [];
+    const getAllPostsAuthors = async () => {
+      const postsAuthors = await getHighlightedPostsAuthors(api);
+      return postsAuthors;
+    };
 
-const HighlightsList = ({ walletAddress }: HighlightsListProps): JSX.Element => (
-  <HighlightsListWrapper className={topHighlights?.length ? 'no-space-right' : ''}>
-    <div className="background-gradient" />
-    <HighlightsHeaderWrapper>
-      <SectionHeader>
-        Top 10 <span>highlights</span>
-      </SectionHeader>
-    </HighlightsHeaderWrapper>
+    const getPostByAuthor = async (accountId: string) => {
+      const post = await getPostByAccount(accountId, api);
+      return post;
+    };
 
-    {!!topHighlights?.length && (
-      <HighlightsBoardContainer>
-        <HighlightsBoardHeading className="board-row">
-          <p>#</p>
-          <div>
-            <p>Wallet address</p>
-            <p>Text</p>
-            <p>Bulletin ID</p>
-          </div>
-        </HighlightsBoardHeading>
-        {topHighlights.map(({ author, id, text }, index) => (
-          <HighlightsRow
-            walletAddress={walletAddress}
-            author={author}
-            id={id}
-            text={text}
-            position={index + 1}
-            key={id}
-          />
-        ))}
-      </HighlightsBoardContainer>
-    )}
+    getAllPostsAuthors().then((authors) => {
+      authors?.forEach((author) => {
+        getPostByAuthor(author).then((post) => {
+          if (post) {
+            allPosts.push(post);
+          }
+        });
+      });
+    });
+    setHighlightedPosts(allPosts);
+  }, [api]);
+  return (
+    <HighlightsListWrapper className={highlightedPosts?.length ? 'no-space-right' : ''}>
+      <div className="background-gradient" />
+      <HighlightsHeaderWrapper>
+        <SectionHeader>
+          All <span>highlights</span>
+        </SectionHeader>
+      </HighlightsHeaderWrapper>
 
-    {!topHighlights?.length && (
-      <HighlightsPlaceholder>
-        <p>No records yet</p>
-      </HighlightsPlaceholder>
-    )}
-  </HighlightsListWrapper>
-);
+      {!!highlightedPosts?.length && (
+        <HighlightsBoardContainer>
+          <HighlightsBoardHeading className="board-row">
+            <p>#</p>
+            <div>
+              <p>Author</p>
+              <p>Text</p>
+              {/* <p>Bulletin ID</p> */}
+            </div>
+          </HighlightsBoardHeading>
+          {highlightedPosts.map(({ author, text }, index) => (
+            <HighlightsRow author={author} text={text} position={index + 1} key={author} />
+          ))}
+        </HighlightsBoardContainer>
+      )}
+
+      {!highlightedPosts?.length && (
+        <HighlightsPlaceholder>
+          <p>No records yet</p>
+        </HighlightsPlaceholder>
+      )}
+    </HighlightsListWrapper>
+  );
+};
 
 export default HighlightsList;

@@ -1,6 +1,8 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import { RootState } from 'redux/store';
 import getWalletAddressShort from 'utils/getWalletAddressShort';
 
 const HighlightsRowStyling = styled.div`
@@ -29,27 +31,32 @@ const HighlightsRowStyling = styled.div`
 `;
 
 interface HighlightsRowProps {
-  walletAddress?: string;
   author: string;
-  id: number;
   text: string;
   position: number;
+  // id: number;
 }
 
 // Highlights the row with a solid border of primary color (see `HighlightsRowStyling` for more details)
 // if `walletAddress === author`.
-const HighlightsRow = ({ walletAddress, author, id, position, text }: HighlightsRowProps) => (
-  <HighlightsRowStyling
-    key={author}
-    className={`board-row ${walletAddress && walletAddress === author ? 'board-row-user' : ''}`}
-  >
-    {position && <p className="board-number">{position}.</p>}
-    <div>
-      <p>{getWalletAddressShort(author)}</p>
-      <p>{text}</p>
-      <p>{id}</p>
-    </div>
-  </HighlightsRowStyling>
-);
+const HighlightsRow = ({ author, position, text }: HighlightsRowProps) => {
+  const loggedAccount = useSelector((state: RootState) => state.walletAccounts.account);
+
+  return (
+    <HighlightsRowStyling
+      key={author}
+      className={`board-row ${
+        loggedAccount && author === loggedAccount.address ? 'board-row-user' : ''
+      }`}
+    >
+      {position && <p className="board-number">{position}.</p>}
+      <div>
+        <p>{getWalletAddressShort(author)}</p>
+        <p>{text}</p>
+        {/* <p>{id}</p> */}
+      </div>
+    </HighlightsRowStyling>
+  );
+};
 
 export default HighlightsRow;

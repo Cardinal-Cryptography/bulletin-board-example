@@ -85,6 +85,7 @@ td {
   padding: 0;
   border: none;
   outline: none;
+  box-sizing: border-box;
 }
 
 a {
@@ -107,10 +108,16 @@ button {
   border: none;
   cursor: pointer;
 }
+
 button:disabled {
+  opacity: 0.4;
   pointer-events: none;
 }
 button:not(:disabled),
 [role='button']:not(:disabled) {
   cursor: pointer;
+}
+
+label {
+  font-family: 'Gilroy', 'Courier New';
 }

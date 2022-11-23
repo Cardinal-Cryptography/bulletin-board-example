@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { ApiPromise } from '@polkadot/api';
+import { useDispatch, useSelector } from 'react-redux';
 
 import HeroHeading from 'components/HeroHeading';
 import Layout from 'components/Layout';
+import Post from 'components/Post';
 
 import { RootState } from 'redux/store';
 import { queries } from 'shared/layout';
+import { deletePost } from 'utils/deletePost';
+import { getPostsAuthors } from 'utils/getPostsAuthors';
+import { getPostByAccount, PostByAccount } from 'utils/getPostByAccount';
 
 import HighlightsList from './HighlightsList';
 
@@ -15,49 +20,66 @@ const Wrapper = styled.div`
 `;
 
 const BulletinBoardContainer = styled.div`
-  min-height: 520px;
-  margin-top: 52px;
-  display: grid;
-  gap: 0;
-  grid-template-rows: 100%;
-  grid-template-rows: max-content 493px;
-  border: 1px solid ${({ theme }) => theme.colors.night[300]};
+  width: 100%;
+  max-height: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
   z-index: 10;
 
   ${queries.tablet} {
-    gap: 30px;
-    grid-template-columns: repeat(2, calc(50% - 15px));
-    grid-template-rows: 1fr;
-  }
-
-  ${queries.tiny} {
-    width: 100%;
   }
 `;
 
-const BulletinBoard = (): JSX.Element => {
+interface BulletinBoardProps {
+  api: ApiPromise;
+}
+
+const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
+  const [posts, setPosts] = useState<PostByAccount[]>([]);
+  const dispatch = useDispatch();
   const loggedAccount = useSelector((state: RootState) => state.walletAccounts.account);
 
-  const [contractInfoOf] = useState('');
+  useEffect(() => {
+    const allPosts: PostByAccount[] = [];
+    const getAllPostsAuthors = async () => {
+      const postsAuthors = await getPostsAuthors(api);
+      return postsAuthors;
+    };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const contractInfo = await api?.query.contracts.contractInfoOf(
-  //       '5FbQfcbmD6XfypXcf7SgTu4uo9oqANaUui8LqaZgkyiWZLkJ'
-  //     );
-  //     const info = await api?.query.console // .contractApi.call query.contracts.contractInfoOf("5FbQfcbmD6XfypXcf7SgTu4uo9oqANaUui8LqaZgkyiWZLkJ");
-  //       .log(info);
-  //     setContractInfoOf(info?.toString() || 'f');
-  //   };
-  //   fetchData();
-  // }, []);
+    const getPostByAuthor = async (accountId: string) => {
+      const post = await getPostByAccount(accountId, api);
+      return post;
+    };
+
+    getAllPostsAuthors().then((authors) => {
+      authors?.forEach((author) => {
+        getPostByAuthor(author).then((post) => {
+          if (post) {
+            allPosts.push(post);
+          }
+        });
+      });
+    });
+    setPosts(allPosts);
+  }, [api, dispatch]);
+
+  const handlePostDelete = (): void => {
+    if (!loggedAccount) return;
+    deletePost(api, loggedAccount);
+  };
 
   return (
     <Layout>
       <Wrapper className="wrapper">
         <HeroHeading variant="browse" />
-        <BulletinBoardContainer>{contractInfoOf}</BulletinBoardContainer>
-        <HighlightsList walletAddress={loggedAccount?.address} />
+        <BulletinBoardContainer>
+          {posts.map(({ author, text }) => (
+            <Post key={author} author={author} text={text} onPostDelete={handlePostDelete} />
+          ))}
+        </BulletinBoardContainer>
+        <HighlightsList api={api} />
       </Wrapper>
     </Layout>
   );
