@@ -4,23 +4,27 @@ use ink_lang as ink;
 
 pub use highlighted_posts::{
     HighlightedPostsError, HighlightedPostsRef, DELETE_HIGHLIGHT_SELECTOR,
+    GET_BY_AUTHOR_SELECTOR, HIGHLIGHTED_POSTS_SELECTOR,
     HIGHLIGHT_POST_SELECTOR,
 };
 
 #[ink::contract]
 mod highlighted_posts {
     use ink_lang::{codegen::EmitEvent, utils::initialize_contract};
+    use ink_prelude::vec::Vec;
     use ink_storage::{traits::SpreadAllocate, Mapping};
 
     // Selectors are short byte arrays that uniquely identify the methods of
     // the contract. We need them to construct the `CallBuilder` instance.
     // They can be found by expanding the `#[ink::contract]` macro.
 
-    pub const HIGHLIGHT_POST_SELECTOR: [u8; 4] =
-        [0, 0, 0, 7];
+    pub const HIGHLIGHTED_POSTS_SELECTOR: [u8; 4] = [0, 0, 0, 6];
 
-    pub const DELETE_HIGHLIGHT_SELECTOR: [u8; 4] =
-        [0, 0, 0, 8];
+    pub const HIGHLIGHT_POST_SELECTOR: [u8; 4] = [0, 0, 0, 7];
+
+    pub const DELETE_HIGHLIGHT_SELECTOR: [u8; 4] = [0, 0, 0, 8];
+
+    pub const GET_BY_AUTHOR_SELECTOR: [u8; 4] = [0, 0, 0, 9];
 
     type Event =
         <HighlightedPosts as ink_lang::reflect::ContractEventBase>::Type;
@@ -50,6 +54,7 @@ mod highlighted_posts {
     pub struct HighlightedPosts {
         created_by: AccountId,
         highlighted: Mapping<AccountId, u32>,
+        highlighted_ids: Vec<AccountId>,
     }
 
     impl HighlightedPosts {
@@ -59,6 +64,7 @@ mod highlighted_posts {
             let caller = Self::env().caller();
             initialize_contract(|instance: &mut HighlightedPosts| {
                 instance.created_by = caller;
+                instance.highlighted_ids = Vec::new();
             })
         }
 
@@ -70,24 +76,19 @@ mod highlighted_posts {
             id: u32,
         ) -> Result<(), HighlightedPostsError> {
             if Self::env().caller() != self.created_by {
-                return Err(HighlightedPostsError::AccessDenied)
+                return Err(HighlightedPostsError::AccessDenied);
             }
             if self.highlighted.contains(author) {
                 return Result::Err(HighlightedPostsError::AlreadyHighlighted);
             } else {
                 self.highlighted.insert(author, &id);
+                self.highlighted_ids.push(author);
                 Self::emit_event(
                     Self::env(),
                     Event::PostHighlighted(PostHighlighted { author, id }),
                 );
                 Ok(())
             }
-        }
-
-        /// Simply returns the ID of the highlighted post by the `author`.
-        #[ink(message)]
-        pub fn get_by_author(&self, author: AccountId) -> Option<u32> {
-            self.highlighted.get(author)
         }
 
         /// Deletes the post by the author.
@@ -101,12 +102,14 @@ mod highlighted_posts {
             author: AccountId,
         ) -> Result<(), HighlightedPostsError> {
             if Self::env().caller() != self.created_by {
-                return Err(HighlightedPostsError::AccessDenied)
+                return Err(HighlightedPostsError::AccessDenied);
             }
             if !self.highlighted.contains(author) {
                 return Err(HighlightedPostsError::HighlightNotFound);
             } else {
                 self.highlighted.remove(author);
+                self.highlighted_ids
+                    .retain(|post_author| post_author != &author);
                 Self::emit_event(
                     Self::env(),
                     Event::HighlightRemoved(HighlightRemoved { author }),
@@ -115,7 +118,20 @@ mod highlighted_posts {
             }
         }
 
-        /// Returns an address of the contract/account that instantiated this instance.
+        /// Simply returns the ID of the highlighted post by the `author`.
+        #[ink(message, selector = 9)]
+        pub fn get_by_author(&self, author: AccountId) -> Option<u32> {
+            self.highlighted.get(author)
+        }
+
+        /// Returns account IDs for which we have highlighted posts
+        #[ink(message, selector = 6)]
+        pub fn highlighted_posts(&self) -> Vec<AccountId> {
+            self.highlighted_ids.clone()
+        }
+
+        /// Returns an address of the contract/account that instantiated this
+        /// instance.
         #[ink(message)]
         pub fn created_by(&self) -> AccountId {
             self.created_by

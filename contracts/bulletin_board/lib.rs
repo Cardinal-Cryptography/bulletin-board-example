@@ -47,7 +47,7 @@ mod bulletin_board {
         codegen::EmitEvent, reflect::ContractEventBase,
         utils::initialize_contract, ToAccountId,
     };
-    use ink_prelude::{format, string::String};
+    use ink_prelude::{format, string::String, vec::Vec};
     use ink_storage::{
         traits::{PackedLayout, SpreadAllocate, SpreadLayout},
         Mapping,
@@ -135,6 +135,7 @@ mod bulletin_board {
         // Store a mapping from AccountIds to a bulleting IDs.
         id_map: Mapping<AccountId, u32>,
         bulletin_map: Mapping<u32, Bulletin>,
+        post_authors: Vec<AccountId>,
         price_per_block_listing: u128,
         elements_count: u32,
         // Optional address of the contract we will call to highlight posts.
@@ -194,6 +195,7 @@ mod bulletin_board {
                 instance.elements_count = 0;
                 instance.highlighted_posts_board =
                     Some(highlighted_posts_board);
+                instance.post_authors = Vec::new();
             })
         }
 
@@ -208,6 +210,7 @@ mod bulletin_board {
                 instance.price_per_block_listing = 0;
                 instance.elements_count = 0;
                 instance.highlighted_posts_board = None;
+                instance.post_authors = Vec::new();
             })
         }
 
@@ -271,8 +274,12 @@ mod bulletin_board {
             let curr_block_number = Self::env().block_number();
             let event =
                 self._post(curr_block_number, expires_after, caller, text);
-            self.highlight_post(event.author, event.id, listing_cost)?;
-            self.reimburse(caller, transferred_amount - listing_cost);
+
+            // Only if user asked to highlight the post.
+            if expires_after != 0 {
+                self.highlight_post(event.author, event.id, listing_cost)?;
+                self.reimburse(caller, transferred_amount - listing_cost);
+            }
             Self::emit_event(Self::env(), Event::BulletinPosted(event));
             Ok(())
         }
@@ -282,7 +289,16 @@ mod bulletin_board {
         pub fn delete(&mut self) -> Result<(), BulletinBoardError> {
             let author = Self::env().caller();
             let bulletin_id = self.delete_bulletin(author)?;
-            self.delete_highlight(author)?;
+            let del_result = self.delete_highlight(author);
+            if Err(BulletinBoardError::HighlightError(
+                HighlightedPostsError::HighlightNotFound,
+            )) != del_result
+            {
+                // It is fine if we don't find the bulletin on the highlighted
+                // posts board but other errors should be
+                // propagated upwards.
+                return del_result;
+            }
             Self::emit_event(
                 Self::env(),
                 Event::BulletinRemoved(BulletinRemoved {
@@ -326,6 +342,18 @@ mod bulletin_board {
             }
         }
 
+        /// Returns a price for highlighting the post for 1 block.
+        #[ink(message)]
+        pub fn get_highlight_price_per_block(&self) -> u128 {
+            self.price_per_block_listing
+        }
+
+        /// Returns all currently visible posts' authors.
+        #[ink(message)]
+        pub fn get_posts_authors(&self) -> Vec<AccountId> {
+            self.post_authors.clone()
+        }
+
         /// Reimburses the caller with overpaid tokens.
         /// Panics if the transfer fails - this means this contract's balance is
         /// too low which means something went wrong.
@@ -347,6 +375,7 @@ mod bulletin_board {
             self.id_map.insert(caller, &bulletin_id);
             self.bulletin_map.insert(bulletin_id, &bulletin);
             self.id_counter = bulletin_id + 1;
+            self.post_authors.push(caller.clone());
             bulletin_id
         }
 
@@ -377,6 +406,7 @@ mod bulletin_board {
                     self.bulletin_map.remove(bulletin_id);
                     self.id_map.remove(caller);
                     self.elements_count -= 1;
+                    self.post_authors.retain(|author| author != &caller);
                     Ok(bulletin_id)
                 }
             }
