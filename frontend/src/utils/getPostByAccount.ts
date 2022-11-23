@@ -1,9 +1,12 @@
 import { ContractPromise } from '@polkadot/api-contract';
+import { ApiPromise } from '@polkadot/api';
+
 import { displayErrorToast } from 'components/NotificationToast';
+
 import { ErrorToastMessages, GAS_LIMIT_VALUE } from 'shared/constants';
+
 import bulletinBoardMetadata from '../metadata/metadata_bulletin_board.json';
 import addresses from '../metadata/addresses.json';
-import { ApiPromise } from '@polkadot/api';
 
 export type PostByAccount = {
   author: string;
@@ -25,7 +28,6 @@ export const getPostByAccount = async (
     accountId
   );
   if (result.isOk && output) {
-    console.log(output.toHuman());
     return output.toHuman() as PostByAccount;
   }
   if (result.isErr) {

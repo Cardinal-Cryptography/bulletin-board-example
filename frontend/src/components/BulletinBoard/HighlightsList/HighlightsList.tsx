@@ -189,7 +189,6 @@ const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
             <div>
               <p>Author</p>
               <p>Text</p>
-              {/* <p>Bulletin ID</p> */}
             </div>
           </HighlightsBoardHeading>
           {highlightedPosts.map(({ author, text }, index) => (

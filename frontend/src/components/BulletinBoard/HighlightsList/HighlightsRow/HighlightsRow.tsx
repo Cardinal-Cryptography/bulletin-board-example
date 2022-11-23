@@ -28,6 +28,13 @@ const HighlightsRowStyling = styled.div`
   & > .board-number {
     font-weight: 500;
   }
+
+  .post-text {
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 `;
 
 interface HighlightsRowProps {
@@ -52,8 +59,7 @@ const HighlightsRow = ({ author, position, text }: HighlightsRowProps) => {
       {position && <p className="board-number">{position}.</p>}
       <div>
         <p>{getWalletAddressShort(author)}</p>
-        <p>{text}</p>
-        {/* <p>{id}</p> */}
+        <p className="post-text">{text}</p>
       </div>
     </HighlightsRowStyling>
   );
