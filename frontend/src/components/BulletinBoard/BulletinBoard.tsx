@@ -15,6 +15,7 @@ import { getPostsAuthors } from 'utils/getPostsAuthors';
 import { getPostByAccount, PostByAccount } from 'utils/getPostByAccount';
 
 import HighlightsList from './HighlightsList';
+import PostDetailsPopup from './PostDetailsPopup';
 
 const Wrapper = styled.div`
   color: ${({ theme }) => theme.colors.white};
@@ -42,6 +43,7 @@ const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
   const dispatch = useDispatch();
   const loggedAccount = useSelector((state: RootState) => state.walletAccounts.account);
   const testPosts = useSelector((state: RootState) => state.posts.posts);
+  const [postDetailsDisplay, setPostDetailsDisplay] = useState<PostByAccount | null>(null);
 
   useEffect(() => {
     const allPosts: PostByAccount[] = [];
@@ -76,18 +78,38 @@ const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
     deletePost(api, loggedAccount).then(() => dispatch(removePost(loggedAccount.address)));
   };
 
+  const displayFullPost = (id: string) => {
+    const postToBeDisplayed = posts.find((post) => post.author === id);
+    if (!postToBeDisplayed) return;
+    setPostDetailsDisplay(postToBeDisplayed);
+  };
+
   return (
-    <Layout>
-      <Wrapper className="wrapper">
-        <HeroHeading variant="browse" />
-        <BulletinBoardContainer>
-          {testPosts.map(({ author, text }) => (
-            <Post key={author} author={author} text={text} onPostDelete={handlePostDelete} />
-          ))}
-        </BulletinBoardContainer>
-        <HighlightsList api={api} />
-      </Wrapper>
-    </Layout>
+    <>
+      {postDetailsDisplay && (
+        <PostDetailsPopup
+          post={postDetailsDisplay}
+          onPopupClose={() => setPostDetailsDisplay(null)}
+        />
+      )}
+      <Layout>
+        <Wrapper className="wrapper">
+          <HeroHeading variant="browse" />
+          <BulletinBoardContainer>
+            {testPosts.map(({ author, text }) => (
+              <Post
+                key={author}
+                author={author}
+                text={text}
+                onPostDelete={handlePostDelete}
+                displayFullPost={displayFullPost}
+              />
+            ))}
+          </BulletinBoardContainer>
+          <HighlightsList api={api} />
+        </Wrapper>
+      </Layout>
+    </>
   );
 };
 

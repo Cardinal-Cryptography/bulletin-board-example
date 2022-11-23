@@ -21,6 +21,11 @@ const PostWrapper = styled.div`
     align-self: center;
     font-weight: 500;
     padding: 20px;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
   }
 
   .post-bottom {
@@ -66,15 +71,18 @@ interface PostProps {
   author: string;
   text: string;
   onPostDelete: (authorId: string) => void;
+  displayFullPost: (authorId: string) => void;
 }
 
-const Post = ({ author, text, onPostDelete }: PostProps): JSX.Element => {
+const Post = ({ author, text, onPostDelete, displayFullPost }: PostProps): JSX.Element => {
   const loggedAccount = useSelector((state: RootState) => state.walletAccounts.account);
   const isAuthor = loggedAccount?.address === author;
 
   return (
     <PostWrapper className={`${isAuthor ? 'own-post' : ''}`}>
-      <h3>{text}</h3>
+      <h3 role="presentation" onClick={() => displayFullPost(author)}>
+        {text}
+      </h3>
       <div className="post-bottom">
         <p>
           <span>author:</span> {getWalletAddressShort(author)}
