@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Navbar from 'components/Navbar';
 import Footer from 'components/Footer';
