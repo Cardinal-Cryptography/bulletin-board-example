@@ -18,7 +18,7 @@ import store from './redux/store';
 const INTERCOM_APP_ID = process.env.REACT_APP_INTERCOM_APP_ID ?? '';
 
 const App = (): JSX.Element => {
-  const [, setApi] = useState<ApiPromise | null>(null);
+  const [api, setApi] = useState<ApiPromise | null>(null);
   const [, setLastChainBlock] = useState<number | null>(null);
   const [, setLastlastBlockParent] = useState<string | null>(null);
 
@@ -51,8 +51,8 @@ const App = (): JSX.Element => {
       <IntercomProvider appId={INTERCOM_APP_ID} autoBoot>
         <Router>
           <Routes>
-            <Route path="/browse" element={<BulletinBoard />} />
-            <Route path="/post" element={<PostPage />} />
+            {api && <Route path="/browse" element={<BulletinBoard api={api} />} />}
+            {api && <Route path="/post" element={<PostPage api={api} />} />}
             <Route path="/another" element={<AnotherNavBarPage />} />
             <Route path="*" element={<Navigate to="/browse" replace />} />
           </Routes>

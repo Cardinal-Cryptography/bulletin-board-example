@@ -8,7 +8,7 @@ import { ReactComponent as WarningIcon } from 'assets/Warning.svg';
 import { ReactComponent as ErrorIcon } from 'assets/Critical.svg';
 
 const ToastWrapper = styled.div`
-  height: calc(100% - 32px);
+  height: 100%;
   padding: 16px;
   display: grid;
   gap: 13px;
