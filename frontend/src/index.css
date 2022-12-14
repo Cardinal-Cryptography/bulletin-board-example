@@ -1,0 +1,123 @@
+@font-face {
+  font-family: 'Gilroy';
+  src: url(./assets/fonts/Gilroy-Regular.otf) format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Gilroy';
+  src: url(./assets/fonts/Gilroy-Light.otf) format('opentype');
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Gilroy';
+  src: url(./assets/fonts/Gilroy-Medium.otf) format('opentype');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Gilroy';
+  src: url(./assets/fonts/Gilroy-Bold.otf) format('opentype');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Gilroy';
+  src: url(./assets/fonts/Gilroy-ExtraBold.otf) format('opentype');
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Karla';
+  src: url(./assets/fonts/Karla-Bold.ttf) format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Karla';
+  src: url(./assets/fonts/Karla-Medium.ttf) format('truetype');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Karla';
+  src: url(./assets/fonts/Karla-Regular.ttf) format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Karla';
+  src: url(./assets/fonts/Karla-Light.ttf) format('truetype');
+  font-weight: 300;
+  font-display: swap;
+}
+
+body,
+html,
+div,
+blockquote,
+img,
+label,
+button,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+ul,
+ol,
+li,
+dl,
+dt,
+dd,
+form,
+a,
+fieldset,
+input,
+th,
+td {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #111b24;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Gilroy', 'Courier New';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  font-family: 'Gilroy', 'Courier New';
+  border: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+button:not(:disabled),
+[role='button']:not(:disabled) {
+  cursor: pointer;
+}
+
+label {
+  font-family: 'Gilroy', 'Courier New';
+}
