@@ -17,8 +17,12 @@ export type PostByAccount = {
 
 export const getPostByAccount = async (
   accountId: string,
-  api: ApiPromise
+  api: ApiPromise | null
 ): Promise<PostByAccount | null> => {
+  if (api === null) {
+    displayErrorToast(ErrorToastMessages.ERROR_API_CONN);
+    return null;
+  }
   const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board);
   const { result, output } = await contract.query.getByAccount(
     contract.address,

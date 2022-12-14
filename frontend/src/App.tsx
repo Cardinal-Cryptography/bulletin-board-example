@@ -51,8 +51,8 @@ const App = (): JSX.Element => {
       <IntercomProvider appId={INTERCOM_APP_ID} autoBoot>
         <Router>
           <Routes>
-            {api && <Route path="/browse" element={<BulletinBoard api={api} />} />}
-            {api && <Route path="/post" element={<PostPage api={api} />} />}
+            <Route path="/browse" element={<BulletinBoard api={api} />} />
+            <Route path="/post" element={<PostPage api={api} />} />
             <Route path="/another" element={<AnotherNavBarPage />} />
             <Route path="*" element={<Navigate to="/browse" replace />} />
           </Routes>

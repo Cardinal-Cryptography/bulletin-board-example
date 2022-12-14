@@ -8,7 +8,11 @@ import { ErrorToastMessages, GAS_LIMIT_VALUE } from 'shared/constants';
 import bulletinBoardMetadata from '../metadata/metadata_bulletin_board.json';
 import addresses from '../metadata/addresses.json';
 
-export const getHighlightPricePerBlock = async (api: ApiPromise): Promise<number | null> => {
+export const getHighlightPricePerBlock = async (api: ApiPromise | null): Promise<number | null> => {
+  if (api === null) {
+    displayErrorToast(ErrorToastMessages.ERROR_API_CONN);
+    return null;
+  }
   const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board);
   const { result, output } = await contract.query.getHighlightPricePerBlock(contract.address, {
     gasLimit: GAS_LIMIT_VALUE,

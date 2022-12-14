@@ -14,9 +14,13 @@ export const sendPost = async (
   expiresAfter: number,
   postText: string,
   totalPrice: number,
-  api: ApiPromise,
+  api: ApiPromise | null,
   loggedUser: InjectedAccountWithMeta
 ): Promise<void> => {
+  if (api === null) {
+    displayErrorToast(ErrorToastMessages.ERROR_API_CONN);
+    return;
+  }
   if (!loggedUser.meta.source) return;
   const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board);
   const injector = await web3FromSource(loggedUser.meta.source);

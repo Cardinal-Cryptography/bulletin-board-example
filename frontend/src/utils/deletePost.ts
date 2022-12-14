@@ -11,9 +11,13 @@ import bulletinBoardMetadata from '../metadata/metadata_bulletin_board.json';
 import addresses from '../metadata/addresses.json';
 
 export const deletePost = async (
-  api: ApiPromise,
+  api: ApiPromise | null,
   loggedUser: InjectedAccountWithMeta
 ): Promise<void> => {
+  if (api === null) {
+    displayErrorToast(ErrorToastMessages.ERROR_API_CONN);
+    return;
+  }
   if (!loggedUser.meta.source) return;
   const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board);
   const injector = await web3FromSource(loggedUser.meta.source);

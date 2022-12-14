@@ -144,7 +144,7 @@ const HighlightsBoardHeading = styled.div`
 `;
 
 interface HighlightsListProps {
-  api: ApiPromise;
+  api: ApiPromise | null;
 }
 
 const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {

@@ -90,7 +90,7 @@ const Wrapper = styled.div`
 `;
 
 interface PostPageProps {
-  api: ApiPromise;
+  api: ApiPromise | null;
 }
 
 const PostPage = ({ api }: PostPageProps): JSX.Element => {

@@ -35,7 +35,7 @@ const BulletinBoardContainer = styled.div`
 `;
 
 interface BulletinBoardProps {
-  api: ApiPromise;
+  api: ApiPromise | null;
 }
 
 const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {

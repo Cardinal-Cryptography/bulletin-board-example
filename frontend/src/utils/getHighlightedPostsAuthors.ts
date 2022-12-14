@@ -8,7 +8,13 @@ import { ErrorToastMessages, GAS_LIMIT_VALUE } from 'shared/constants';
 import highlightedPostsMetadata from '../metadata/metadata_highlighted_posts.json';
 import addresses from '../metadata/addresses.json';
 
-export const getHighlightedPostsAuthors = async (api: ApiPromise): Promise<string[] | null> => {
+export const getHighlightedPostsAuthors = async (
+  api: ApiPromise | null
+): Promise<string[] | null> => {
+  if (api === null) {
+    displayErrorToast(ErrorToastMessages.ERROR_API_CONN);
+    return null;
+  }
   const contract = new ContractPromise(api, highlightedPostsMetadata, addresses.highlighted_posts);
   const { result, output } = await contract.query.highlightedPosts(contract.address, {
     gasLimit: GAS_LIMIT_VALUE,
