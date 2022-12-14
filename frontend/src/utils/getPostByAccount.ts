@@ -7,6 +7,7 @@ import { ErrorToastMessages, GAS_LIMIT_VALUE } from 'shared/constants';
 
 import bulletinBoardMetadata from '../metadata/metadata_bulletin_board.json';
 import addresses from '../metadata/addresses.json';
+import { sleep } from './sleep';
 
 export type PostByAccount = {
   author: string;
@@ -19,6 +20,7 @@ export const getPostByAccount = async (
   accountId: string,
   api: ApiPromise | null
 ): Promise<PostByAccount | null> => {
+  await sleep(500);
   if (api === null) {
     displayErrorToast(ErrorToastMessages.ERROR_API_CONN);
     return null;
