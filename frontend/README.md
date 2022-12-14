@@ -1,4 +1,4 @@
-# Examplary frontend for the Bulletin Board contracts
+# Exemplary frontend for the Bulletin Board contracts
 
 In this folder you will find an example fronted for the Bulletin Board contracts from `../contracts` directory.
 
