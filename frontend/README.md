@@ -3,6 +3,20 @@
 In this folder you will find an example fronted for the Bulletin Board contracts from `../contracts` directory.
 
 The purpose is to show dApp developers an example frontend where users are able to both send signed transactions to blockchain (using their PolkadotJS extension wallet) and read contract data through node's RPC.
+<p align="middle">
+  <img src="https://user-images.githubusercontent.com/95355183/207668145-7f371d3d-6e5d-45fb-823b-9d15404a3ce8.png" width=45%/> 
+  <img src="https://user-images.githubusercontent.com/95355183/207668186-d1048df0-df90-41e2-a673-f6e61b04c291.png" width=45%/>
+</p>
+<p align="middle">
+  <img src="https://user-images.githubusercontent.com/95355183/207668236-4b8d8a65-2f0d-4e1a-a4fc-1efe92a0e33e.png" width=45%/>
+  <img src="https://user-images.githubusercontent.com/95355183/207669773-8bb89466-f5b8-4d0c-8090-ddb8e80da8b0.png" width=45%/>
+</p>
+<p align="middle">
+  <img src="https://user-images.githubusercontent.com/95355183/207671162-bf8173b9-fa7c-4b9f-a42e-e38378abf836.png" width=45%/>
+  <img src="https://user-images.githubusercontent.com/95355183/207671202-7b4c5987-a7e0-4e3a-ac98-4c44726e6f81.png" width=45%/>
+</p>
+
+
 
 ## What kind of batteries are included?
 
