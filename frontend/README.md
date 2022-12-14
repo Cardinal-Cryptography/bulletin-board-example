@@ -1,8 +1,8 @@
 # Exemplary frontend for the Bulletin Board contracts
 
-In this folder you will find an example fronted for the Bulletin Board contracts from `../contracts` directory.
+In this folder you will find fronted for the Bulletin Board contracts from `../contracts` directory.
 
-The purpose is to show dApp developers an example frontend where users are able to both send signed transactions to blockchain (using their PolkadotJS extension wallet) and read contract data through node's RPC.
+The purpose is to show dApp developers an example where users are able to both send signed transactions to blockchain (using their PolkadotJS extension wallet) and read contract data through node's RPC.
 <p align="middle">
   <img src="https://user-images.githubusercontent.com/95355183/207668145-7f371d3d-6e5d-45fb-823b-9d15404a3ce8.png" width=45%/> 
   <img src="https://user-images.githubusercontent.com/95355183/207668186-d1048df0-df90-41e2-a673-f6e61b04c291.png" width=45%/>
