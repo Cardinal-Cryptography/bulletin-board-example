@@ -7,10 +7,12 @@ import { ErrorToastMessages, GAS_LIMIT_VALUE } from 'shared/constants';
 
 import highlightedPostsMetadata from '../metadata/metadata_highlighted_posts.json';
 import addresses from '../metadata/addresses.json';
+import { sleep } from './sleep';
 
 export const getHighlightedPostsAuthors = async (
   api: ApiPromise | null
 ): Promise<string[] | null> => {
+  await sleep(500);
   if (api === null) {
     displayErrorToast(ErrorToastMessages.ERROR_API_CONN);
     return null;
