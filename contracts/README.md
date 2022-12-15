@@ -165,7 +165,7 @@ Every contract _instance_ is stored under an address of type `AccountId`. To cal
 Calling another contract can be currently made in two ways:
 
 1) Building the call manually. An example of that is [`highlight_post`](./bulletin_board/lib.rs#L415). Here, we set every piece of the call by hand and we have no help from the compiler (to tell us whether we use correct arguments or if the return type is valid). This manual approach gives contract author access to ink!-level [errors](https://docs.rs/ink_env/3.4.0/ink_env/enum.Error.html) which gives an option to recover from the low-level failures.
-2) Using the macro-generated `*Ref` pattern. An example of that is [`delete_highlight`](./bulletin_board/lib.rs#L452). This approach is type-safe but doesn't allow for transferring tokens with the call. At least not currently.
+2) Using the macro-generated `*Ref` pattern. An example of that is [`delete_highlight`](./bulletin_board/lib.rs#L487). This approach is type-safe but doesn't allow for transferring tokens with the call. At least not currently.
 
 Both approaches, if done correctly, provide a typed access to another contract.
 
