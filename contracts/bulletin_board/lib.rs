@@ -17,7 +17,7 @@
 // When expanded, this macro will:
 // * Add local type aliases to the `mod bulletin_board`, like `Environment`,
 //   `AccountId`, `Balance`, `Hash`, `Timestamp` and `BlockNumber`. All will
-//   resolve to defaults `ink_env::DefaultEnvironment::<type>`
+//   resolve to defaults `ink::env::DefaultEnvironment::<type>`
 // * Adds useful #[doc] macros
 // * various attributes to structs and functions
 // * and many others.
@@ -31,26 +31,24 @@
 // * at least one `#[ink(message)]`
 // * and few other.
 // More can be found [here](https://use.ink/macros-attributes/contract/).
-#[ink_lang::contract]
+#[ink::contract]
 mod bulletin_board {
 
     use highlighted_posts::{
         HighlightedPostsError, HighlightedPostsRef, HIGHLIGHT_POST_SELECTOR,
     };
 
-    use ink_env::{
+    use ink::env::{
         call::{build_call, Call, ExecutionInput, FromAccountId, Selector},
         DefaultEnvironment, Error as InkEnvError,
     };
 
-    use ink_lang::{
-        codegen::EmitEvent, reflect::ContractEventBase,
-        utils::initialize_contract, ToAccountId,
-    };
-    use ink_prelude::{format, string::String, vec::Vec};
-    use ink_storage::{
-        traits::{PackedLayout, SpreadAllocate, SpreadLayout},
-        Mapping,
+    use ink::{
+        codegen::EmitEvent,
+        prelude::{format, string::String, vec::Vec},
+        reflect::ContractEventBase,
+        storage::{traits::StorageLayout, Mapping},
+        ToAccountId,
     };
     /// Errors returned by the contract's methods.
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
@@ -70,7 +68,7 @@ mod bulletin_board {
         // different contract.
         HighlightError(HighlightedPostsError),
         /// An interaction with ink! environment has failed
-        // NOTE: We're representing the `ink_env::Error` as `String` b/c the
+        // NOTE: We're representing the `ink::env::Error` as `String` b/c the
         // type does not have Encode/Decode implemented.
         InkEnvError(String),
     }
@@ -97,16 +95,8 @@ mod bulletin_board {
     // otherwise rustc complains.
     // `scale::Encode` and `scale::Decode` are required by the implementation of
     // `PackedLayout`.
-    #[derive(
-        Debug,
-        PartialEq,
-        Eq,
-        scale::Encode,
-        scale::Decode,
-        SpreadLayout,
-        PackedLayout,
-    )]
-    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
+    #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
+    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo, StorageLayout))]
     pub struct Bulletin {
         author: AccountId,
         posted_at: BlockNumber,
@@ -127,7 +117,6 @@ mod bulletin_board {
     // * whether to pad it when it doesn't fill in full 256bytes of the cell
     // * etc.
     // For more information consult ink! documentation.
-    #[derive(SpreadAllocate)]
     pub struct BulletinBoard {
         // Monotonically increasing counter for assigning unique IDs to
         // bulletins.
@@ -148,9 +137,9 @@ mod bulletin_board {
         // clients (UI clients). For more information see the [documentation](https://use.ink/metadata).
         //
         /// Creates an instance of the bulletin board contract.
-        /// - `version` is the version of contract's instance. Works also as
-        ///   salt for deployment of `highlighted_posts_board_hash` contract so
-        ///   when `BulletinBoard::new` is called from the same account, use a
+        /// - `version` is the version of contract's  Works also as salt for
+        ///   deployment of `highlighted_posts_board_hash` contract so when
+        ///   `BulletinBoard::new` is called from the same account, use a
         ///   different `version` to re-instantiate it.
         /// - `price_per_block_listing` specifies the price of listing the
         /// post for every block.
@@ -189,14 +178,15 @@ mod bulletin_board {
 
             // This call is required in order to correctly initialize the
             // `Mapping`s of our contract.
-            initialize_contract(|instance: &mut BulletinBoard| {
-                instance.id_counter = 0;
-                instance.price_per_block_listing = price_per_block_listing;
-                instance.elements_count = 0;
-                instance.highlighted_posts_board =
-                    Some(highlighted_posts_board);
-                instance.post_authors = Vec::new();
-            })
+            Self {
+                id_counter: 0,
+                price_per_block_listing: price_per_block_listing,
+                elements_count: 0,
+                highlighted_posts_board: Some(highlighted_posts_board),
+                post_authors: Vec::new(),
+                bulletin_map: Mapping::default(),
+                id_map: Mapping::default(),
+            }
         }
 
         // Contracts can have multiple constructors. You can choose which to use
@@ -205,13 +195,15 @@ mod bulletin_board {
         /// "free".
         #[ink(constructor)]
         pub fn free() -> Self {
-            initialize_contract(|instance: &mut BulletinBoard| {
-                instance.id_counter = 0;
-                instance.price_per_block_listing = 0;
-                instance.elements_count = 0;
-                instance.highlighted_posts_board = None;
-                instance.post_authors = Vec::new();
-            })
+            Self {
+                id_counter: 0,
+                price_per_block_listing: 0,
+                elements_count: 0,
+                highlighted_posts_board: None,
+                post_authors: Vec::new(),
+                bulletin_map: Mapping::default(),
+                id_map: Mapping::default(),
+            }
         }
 
         /// Adds new post to the "bulletin board".
@@ -242,7 +234,7 @@ mod bulletin_board {
 
             // We can add `println!` statements that will be written to stdout
             // during the test.
-            ink_env::debug_println!("`{:?}` wants to create a post that expires after `{:?}` blocks \
+            ink::env::debug_println!("`{:?}` wants to create a post that expires after `{:?}` blocks \
                 with the text `{:?}`", caller, expires_after, text);
 
             if self.id_map.contains(&caller) {
@@ -289,24 +281,27 @@ mod bulletin_board {
         pub fn delete(&mut self) -> Result<(), BulletinBoardError> {
             let author = Self::env().caller();
             let bulletin_id = self.delete_bulletin(author)?;
-            let del_result = self.delete_highlight(author);
-            if Err(BulletinBoardError::HighlightError(
-                HighlightedPostsError::HighlightNotFound,
-            )) != del_result
-            {
-                // It is fine if we don't find the bulletin on the highlighted
-                // posts board but other errors should be
-                // propagated upwards.
-                return del_result;
+            match self.delete_highlight(author) {
+                Ok(()) => {
+                    Self::emit_event(
+                        Self::env(),
+                        Event::BulletinRemoved(BulletinRemoved {
+                            author,
+                            id: bulletin_id,
+                        }),
+                    );
+                    Ok(())
+                }
+                Err(BulletinBoardError::HighlightError(
+                    HighlightedPostsError::HighlightNotFound,
+                )) => Ok(()),
+                Err(err) => {
+                    // It is fine if we don't find the bulletin on the highlighted
+                    // posts board but other errors should be
+                    // propagated upwards.
+                    Err(err)
+                }
             }
-            Self::emit_event(
-                Self::env(),
-                Event::BulletinRemoved(BulletinRemoved {
-                    author,
-                    id: bulletin_id,
-                }),
-            );
-            Ok(())
         }
 
         /// Returns the post created by the caller.
@@ -324,7 +319,7 @@ mod bulletin_board {
             self.bulletin_map.get(&id)
         }
 
-        /// Returns an address of `highlighted_posts` board contract instance.
+        /// Returns an address of `highlighted_posts` board contract
         #[ink(message)]
         pub fn get_highlights_board(&self) -> Option<AccountId> {
             self.highlighted_posts_board
@@ -472,7 +467,7 @@ mod bulletin_board {
 
         // Constructs the cross-contract call using the `*Ref` pattern.
         // More type-safe than the manual builder pattern. If you expanded the
-        // `#[ink_lang::contract]` macro for this contract, you will find
+        // `#[ink::contract]` macro for this contract, you will find
         // that `from_account_id` function constructs the `build_call` just like
         // we did manually in `fn highlight_post`.
         //
@@ -534,9 +529,7 @@ mod bulletin_board {
         /// them here.
         use super::*;
 
-        use ink_lang as ink;
-
-        use ink_env::test::{
+        use ink::env::test::{
             default_accounts, get_account_balance, recorded_events,
             DefaultAccounts, EmittedEvent,
         };
@@ -545,20 +538,20 @@ mod bulletin_board {
         // Returns accounts that are pre-seeded in the test database.
         // We can use them as authors for transactions.
         fn get_default_test_accounts(
-        ) -> DefaultAccounts<ink_env::DefaultEnvironment> {
-            default_accounts::<ink_env::DefaultEnvironment>()
+        ) -> DefaultAccounts<ink::env::DefaultEnvironment> {
+            default_accounts::<ink::env::DefaultEnvironment>()
         }
 
         // Returns balance of test account.
         fn get_balance(account_id: AccountId) -> Balance {
-            get_account_balance::<ink_env::DefaultEnvironment>(account_id)
+            get_account_balance::<ink::env::DefaultEnvironment>(account_id)
                 .expect("Cannot get account balance")
         }
 
         // Sets caller returned by the next `Self::env().caller()` method call
         // in the contract.
         fn set_caller(caller: AccountId) {
-            ink_env::test::set_caller::<ink_env::DefaultEnvironment>(caller);
+            ink::env::test::set_caller::<ink::env::DefaultEnvironment>(caller);
         }
 
         const PRICE_PER_BLOCK_COST: u128 = 10;
@@ -566,20 +559,20 @@ mod bulletin_board {
         #[test]
         fn constructor_works() {
             // let instance = BulletinBoard::new(PRICE_PER_BLOCK_COST);
-            // assert_eq!(instance.price_per_block_listing,
+            // assert_eq!(price_per_block_listing,
             // PRICE_PER_BLOCK_COST);
 
             let default = BulletinBoard::free();
             assert_eq!(default.price_per_block_listing, 0);
         }
 
-        #[ink_lang::test]
+        #[ink::test]
         fn post_free_succeeds() {
             let accounts = get_default_test_accounts();
             let alice = accounts.alice;
             let mut instance = BulletinBoard::free();
             let expire_after: BlockNumber = 100;
-            let text: ink_prelude::string::String = "Text".into();
+            let text: ink::prelude::string::String = "Text".into();
             // Setting Alice as the first caller is not strictly required as
             // it's the default for ink tests. We do it for clarity
             // though.
@@ -609,7 +602,7 @@ mod bulletin_board {
             );
         }
 
-        #[ink_lang::test]
+        #[ink::test]
         fn event_on_post() {
             let mut instance = BulletinBoard::free();
             let bulletin = post_from_alice(&mut instance);
@@ -650,7 +643,7 @@ mod bulletin_board {
             let accounts = get_default_test_accounts();
             let alice = accounts.alice;
             let expire_after: BlockNumber = 100;
-            let text: ink_prelude::string::String = "Text".into();
+            let text: ink::prelude::string::String = "Text".into();
             let expected_bulletin = Bulletin {
                 author: alice,
                 posted_at: 0,
@@ -665,7 +658,7 @@ mod bulletin_board {
             expected_bulletin
         }
 
-        #[ink_lang::test]
+        #[ink::test]
         fn delete_works() {
             let accounts = get_default_test_accounts();
             let alice = accounts.alice;
@@ -706,12 +699,18 @@ mod bulletin_board {
             );
         }
 
-        #[ink_lang::test]
+        #[ink::test]
         fn event_on_delete() {
             let mut instance = BulletinBoard::free();
-            let _bulletin = post_from_alice(&mut instance);
+            let bulletin = post_from_alice(&mut instance);
             assert!(instance.delete().is_ok(), "deletion should succeed");
             let recorded_events = recorded_events().collect::<Vec<_>>();
+            assert_expected_post_event(
+                &recorded_events[0],
+                bulletin.author,
+                bulletin.expires_at,
+                0,
+            );
             // The events returned by `recored_events()` are all events emitted
             // since the beginning of the test.
             // The first event (at index 0) will be `BulletinPosted` by Alice
