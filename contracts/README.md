@@ -32,11 +32,20 @@ This repository contains two example smart contracts:
 
 ### Building
 
+#### Native
+
 You can build each of the contracts by executing
 ```shell
 cargo contract build --release
 ```
-in respective root folders (`/bulletin_board` and `highlighted_posts`). Verify that the build is successful and there are (among others) three additional files in `<example_contract>/target/ink` directory:
+
+#### Docker
+
+If you don't want to worry about downloading and installing proper dependencies, you can follow instructions in our ink! compiler repository https://github.com/Cardinal-Cryptography/ink-compiler.
+
+-------------
+
+In respective root folders (`/bulletin_board` and `highlighted_posts`). Verify that the build is successful and there are (among others) three additional files in `<example_contract>/target/ink` directory:
 * `metadata.json` -- contains information about the contract's ABI and types.
 * `*.wasm` -- the actual logic of the contract compiled into WASM code.
 * `*.contract` -- the two above bundled up.
