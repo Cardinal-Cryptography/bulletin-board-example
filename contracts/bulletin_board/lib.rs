@@ -395,11 +395,10 @@ mod bulletin_board {
             &mut self,
             caller: AccountId,
         ) -> Result<u32, BulletinBoardError> {
-            match self.id_map.get(caller) {
+            match self.id_map.take(caller) {
                 None => return Err(BulletinBoardError::BulletinNotFound),
                 Some(bulletin_id) => {
                     self.bulletin_map.remove(bulletin_id);
-                    self.id_map.remove(caller);
                     self.elements_count -= 1;
                     self.post_authors.retain(|author| author != &caller);
                     Ok(bulletin_id)
