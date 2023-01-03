@@ -32,11 +32,20 @@ This repository contains two example smart contracts:
 
 ### Building
 
+#### Native
+
 You can build each of the contracts by executing
 ```shell
 cargo contract build --release
 ```
-in respective root folders (`/bulletin_board` and `highlighted_posts`). Verify that the build is successful and there are (among others) three additional files in `<example_contract>/target/ink` directory:
+
+#### Docker
+
+If you don't want to worry about downloading and installing proper dependencies, you can follow instructions in our ink! compiler repository https://github.com/Cardinal-Cryptography/ink-compiler.
+
+-------------
+
+In respective root folders (`/bulletin_board` and `highlighted_posts`). Verify that the build is successful and there are (among others) three additional files in `<example_contract>/target/ink` directory:
 * `metadata.json` -- contains information about the contract's ABI and types.
 * `*.wasm` -- the actual logic of the contract compiled into WASM code.
 * `*.contract` -- the two above bundled up.
@@ -105,17 +114,17 @@ For Testnet (or any other network for that matter), you will have to fill in the
 ### Emit events and verify in tests you did
 
 #### Creating and emitting events
-See `lib.rs` for `#[ink(event)]` on how to define it and [`fn emit_event`](./bulletin_board/lib.rs#L471) to see how to emit it.
+See `lib.rs` for `#[ink(event)]` on how to define it and [`fn emit_event`](./bulletin_board/lib.rs#L395) to see how to emit it.
 
-> Thing to note here is the custom `emit_event` function - you may have seen in official ink! documentation that events are emitted via `self::env().emit_event(my_event)` calls. The "official" version works when there is only one contract emitting events on our _execution path_. If our contract emits events and, during execution, calls another contract that emits events AND we have that contract as a dependency, we will have two unreleated event families (from two different contracts) and the compiler will fail to resolve type boundaries correctly. For more details, see comments on [`fn emit_event`](./bulletin_board/lib.rs#L471).
+> Thing to note here is the custom `emit_event` function - you may have seen in official ink! documentation that events are emitted via `self::env().emit_event(my_event)` calls. The "official" version works when there is only one contract emitting events on our _execution path_. If our contract emits events and, during execution, calls another contract that emits events AND we have that contract as a dependency, we will have two unreleated event families (from two different contracts) and the compiler will fail to resolve type boundaries correctly. For more details, see comments on [`fn emit_event`](./bulletin_board/lib.rs#L395).
 
 #### Testing the events were emitted
 
-In `lib.rs` look for calls to [`recorded_events()`](./bulletin_board/lib.rs#L588), to collect the emitted events, and [`assert_expected_*_event`](./bulletin_board/lib.rs#L589) to test whether we got the expected ones.
+In `lib.rs` look for calls to [`recorded_events()`](./bulletin_board/lib.rs#L610), to collect the emitted events, and [`assert_expected_*_event`](./bulletin_board/lib.rs#L611) to test whether we got the expected ones.
 
 ### Do logging in your contract
 
-In `lib.rs` see [invocation](./bulletin_board/lib.rs#L242) of `ink_env::debug_println!` - this will produce a log message when ran in test. To verify, run [`event_on_post`](./bulletin_board/lib.rs#L583) test and observe the following log:
+In `lib.rs` see [invocation](./bulletin_board/lib.rs#L237) of `ink_env::debug_println!` - this will produce a log message when ran in test. To verify, run [`event_on_post`](./bulletin_board/lib.rs#L605) test and observe the following log:
 ```shell
 running 1 test
 `AccountId([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])` wants to create a post that expires after `100` blocks with the text `"Text"`
@@ -126,21 +135,21 @@ If you build your contract in debug mode (i.e. without `--release` flag), then t
 
 ### Store custom data in your contract
 
-Derive (or implement manually) `SpreadLayout` and `PackedLayout` for the structs you want to store as part of the contract. See [`Bulletin`](./bulletin_board/lib.rs#L110)struct and its [usage](./bulletin_board/lib.rs#L137) in the `Mapping` of the `BulletinBoard` contract state.
+Derive `ink::storage::traits::StorageLayout` (for `std` feature) on types that you want to store in `Mapping` map. See [`Bulletin`](./bulletin_board/lib.rs#L99)struct and its [usage](./bulletin_board/lib.rs#L116) in the `Mapping` of the `BulletinBoard` contract state.
 
 ### Instantiate another contract in constructor
 
-All you need is a code hash of the other contract you want to instantiate. See an example of that in [`bulletin_board/lib.rs#new`](./bulletin_board/lib.rs#L159).
+All you need is a code hash of the other contract you want to instantiate. See an example of that in [`bulletin_board/lib.rs#new`](./bulletin_board/lib.rs#L138).
 
 ### Transfer tokens as part of a contract call
 
-If you want your method to accept token transfer, you need to tag it with `payable` keyword: `#[ink(payable)]`. See [`BulletinBoard::post`](./bulletin_board/lib.rs#L231) for an example.
+If you want your method to accept token transfer, you need to tag it with `payable` keyword: `#[ink(payable)]`. See [`BulletinBoard::post`](./bulletin_board/lib.rs#L215) for an example.
 
-For an example on how to do a cross-contract call _and_ transfer tokens, see [`highlight_post`](./bulletin_board/lib.rs#L415).
+For an example on how to do a cross-contract call _and_ transfer tokens, see [`highlight_post`](./bulletin_board/lib.rs#L446).
 
 ### Unit test a contract
 
-See [`bulletin_board::tests`](./bulletin_board/lib.rs#L502) for various tests, including mocking the blockchain environment - setting caller, token balance, etc.
+See [`bulletin_board::tests`](./bulletin_board/lib.rs#L515) for various tests, including mocking the blockchain environment - setting caller, token balance, etc.
 
 ### Terminate a contract (and why)
 
@@ -164,8 +173,8 @@ Every contract _instance_ is stored under an address of type `AccountId`. To cal
 
 Calling another contract can be currently made in two ways:
 
-1) Building the call manually. An example of that is [`highlight_post`](./bulletin_board/lib.rs#L415). Here, we set every piece of the call by hand and we have no help from the compiler (to tell us whether we use correct arguments or if the return type is valid). This manual approach gives contract author access to ink!-level [errors](https://docs.rs/ink_env/3.4.0/ink_env/enum.Error.html) which gives an option to recover from the low-level failures.
-2) Using the macro-generated `*Ref` pattern. An example of that is [`delete_highlight`](./bulletin_board/lib.rs#L487). This approach is type-safe but doesn't allow for transferring tokens with the call. At least not currently.
+1) Building the call manually. An example of that is [`highlight_post`](./bulletin_board/lib.rs#L435). Here, we set every piece of the call by hand and we have no help from the compiler (to tell us whether we use correct arguments or if the return type is valid). This manual approach gives contract author access to ink!-level [errors](https://docs.rs/ink_env/3.4.0/ink_env/enum.Error.html) which gives an option to recover from the low-level failures.
+2) Using the macro-generated `*Ref` pattern. An example of that is [`delete_highlight`](./bulletin_board/lib.rs#L470). This approach is type-safe but doesn't allow for transferring tokens with the call. At least not currently.
 
 Both approaches, if done correctly, provide a typed access to another contract.
 
