@@ -5,6 +5,8 @@ authors = ["[your_name] <[your_email]>"]
 edition = "2021"
 
 [dependencies]
+# OpenBrush-compatible.
+# See https://github.com/727-Ventures/openbrush-contracts/releases/tag/3.0.0-beta for details.
 ink = { git = "https://github.com/paritytech/ink", rev = "4655a8b4413cb50cbc38d1b7c173ad426ab06cde", default-features = false}
 
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
