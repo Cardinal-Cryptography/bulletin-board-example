@@ -438,10 +438,10 @@ mod bulletin_board {
             cost: u128,
         ) -> Result<(), BulletinBoardError> {
             if let Some(highlight_board) = self.highlighted_posts_board {
-                // Since the introduction of `ink::LangError` we got a new
-                // "channel" where the contract errors may be pushed into.
-                // In this particular example we have three layers of `Result`
-                // types.
+                // The potential call result here is a three layers of `Result`,
+                // where each layer has a different error. We're
+                // handling each explicitly below, for the example purposes, but
+                // you can also choose to short-circuit with `?`.
                 let call_result: Result<Result<Result<(), HighlightedPostsError>, ink::LangError>, ink::env::Error> = build_call::<DefaultEnvironment>()
                     .call_type(Call::new().callee(highlight_board)) // Address of the contract we want to call
                     .exec_input(
@@ -458,12 +458,18 @@ mod bulletin_board {
                     .fire();
 
                 match call_result {
+                    // Pallet contracts errors like deserialization error, panic
+                    // in the called contract, etc.
                     Err(ink_env_error) => {
                         return Err(BulletinBoardError::from(ink_env_error))
                     }
+                    // An error emitted by the smart contracting language.
+                    // For more details see ink::LangError.
                     Ok(Err(lang_error)) => {
                         panic!("Unexpected ink::LangError: {:?}", lang_error)
                     }
+                    // `Result<(), HighlightedPostsError>` is the return type of
+                    // the method we're calling.
                     Ok(Ok(Err(contract_call_error))) => {
                         return Err(BulletinBoardError::from(
                             contract_call_error,
