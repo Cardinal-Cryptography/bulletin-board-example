@@ -38,16 +38,19 @@ mod bulletin_board {
         HighlightedPostsError, HighlightedPostsRef, HIGHLIGHT_POST_SELECTOR,
     };
 
-    use ink::env::{
-        call::{build_call, Call, ExecutionInput, FromAccountId, Selector},
-        DefaultEnvironment, Error as InkEnvError,
+    use ink::{
+        env::{
+            call::{build_call, Call, ExecutionInput, FromAccountId, Selector},
+            DefaultEnvironment, Error as InkEnvError,
+        },
+        LangError,
     };
 
     use ink::{
         codegen::EmitEvent,
         prelude::{format, string::String, vec::Vec},
         reflect::ContractEventBase,
-        storage::{traits::StorageLayout, Mapping},
+        storage::Mapping,
         ToAccountId,
     };
     /// Errors returned by the contract's methods.
@@ -95,7 +98,10 @@ mod bulletin_board {
     // `Storabe` for `v`'s type, it (`Storable`) has blanket implementation
     // for all types that implement `scale::Decode` and `scale::Encode`.
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
-    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo, StorageLayout))]
+    #[cfg_attr(
+        feature = "std",
+        derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
+    )]
     pub struct Bulletin {
         author: AccountId,
         posted_at: BlockNumber,
@@ -433,7 +439,11 @@ mod bulletin_board {
             cost: u128,
         ) -> Result<(), BulletinBoardError> {
             if let Some(highlight_board) = self.highlighted_posts_board {
-                build_call::<DefaultEnvironment>()
+                // The potential call result here is a three layers of `Result`,
+                // where each layer has a different error. We're
+                // handling each explicitly below, for the example purposes, but
+                // you can also choose to short-circuit with `?`.
+                let call_result: Result<Result<Result<(), HighlightedPostsError>, ink::LangError>, ink::env::Error> = build_call::<DefaultEnvironment>()
                     .call_type(Call::new().callee(highlight_board)) // Address of the contract we want to call
                     .exec_input(
                         ExecutionInput::new(Selector::new(
@@ -445,11 +455,29 @@ mod bulletin_board {
                         .push_arg(id),
                     )
                     .transferred_value(cost) // We can transfer tokens forward to another contract.
-                    .returns::<Result<(), HighlightedPostsError>>()
-                    .fire()??; // Double unwrap: first `?` deals with ink!'s
-                               // native error `InkError`, while the second one
-                               // deals with the result of the call - in this
-                               // case it's `Result<(), HighlightedPostsError>`.
+                    .returns::<Result<Result<(), HighlightedPostsError>, LangError>>()
+                    .fire();
+
+                match call_result {
+                    // Pallet contracts errors like deserialization error, panic
+                    // in the called contract, etc.
+                    Err(ink_env_error) => {
+                        return Err(BulletinBoardError::from(ink_env_error))
+                    }
+                    // An error emitted by the smart contracting language.
+                    // For more details see ink::LangError.
+                    Ok(Err(lang_error)) => {
+                        panic!("Unexpected ink::LangError: {:?}", lang_error)
+                    }
+                    // `Result<(), HighlightedPostsError>` is the return type of
+                    // the method we're calling.
+                    Ok(Ok(Err(contract_call_error))) => {
+                        return Err(BulletinBoardError::from(
+                            contract_call_error,
+                        ))
+                    }
+                    Ok(Ok(Ok(_unit))) => return Ok(()),
+                }
             }
             Ok(())
         }
