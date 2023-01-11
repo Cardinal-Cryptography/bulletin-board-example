@@ -1,8 +1,17 @@
 {
   "source": {
-    "hash": "0x0d5772b0281b466dc831d2a1c24580f6e02cd9aec7a958a3f2ebdff34c5e0196",
-    "language": "ink! 3.4.0",
-    "compiler": "rustc 1.67.0-nightly"
+    "hash": "0xc88d350118341f8b13afa1fd100b8b05da31eac8fb26cd4872c04cffa17ca6b9",
+    "language": "ink! 4.0.0-beta",
+    "compiler": "rustc 1.64.0",
+    "build_info": {
+      "build_mode": "Release",
+      "cargo_contract_version": "2.0.0-beta.1",
+      "rust_toolchain": "stable-x86_64-unknown-linux-gnu",
+      "wasm_opt_settings": {
+        "keep_debug_symbols": false,
+        "optimization_passes": "Z"
+      }
+    }
   },
   "contract": {
     "name": "notice_pillar",
@@ -11,815 +20,1092 @@
       "[your_name] <[your_email]>"
     ]
   },
-  "V3": {
-    "spec": {
-      "constructors": [
-        {
-          "args": [
-            {
-              "label": "version",
-              "type": {
-                "displayName": [
-                  "u8"
-                ],
-                "type": 4
-              }
-            },
-            {
-              "label": "price_per_block_listing",
-              "type": {
-                "displayName": [
-                  "u128"
-                ],
-                "type": 10
-              }
-            },
-            {
-              "label": "highlighted_posts_board_hash",
-              "type": {
-                "displayName": [
-                  "Hash"
-                ],
-                "type": 11
-              }
-            }
-          ],
-          "docs": [
-            "Creates an instance of the bulletin board contract.",
-            "- `version` is the version of contract's instance. Works also as",
-            "salt for deployment of `highlighted_posts_board_hash` contract so",
-            "when `BulletinBoard::new` is called from the same account, use a",
-            "different `version` to re-instantiate it.",
-            "- `price_per_block_listing` specifies the price of listing the",
-            "post for every block.",
-            "- `highlighted_posts_board` argument is a code hash of",
-            "the contract we will instantiate."
-          ],
-          "label": "new",
-          "payable": false,
-          "selector": "0x9bae9d5e"
-        },
-        {
-          "args": [],
-          "docs": [
-            "Creates an instance of `BulletinBoard` contract where posting is",
-            "\"free\"."
-          ],
-          "label": "free",
-          "payable": false,
-          "selector": "0xec4dfb7c"
-        }
-      ],
-      "docs": [],
-      "events": [
-        {
-          "args": [
-            {
-              "docs": [],
-              "indexed": true,
-              "label": "author",
-              "type": {
-                "displayName": [
-                  "AccountId"
-                ],
-                "type": 2
-              }
-            },
-            {
-              "docs": [],
-              "indexed": false,
-              "label": "expires_at",
-              "type": {
-                "displayName": [
-                  "BlockNumber"
-                ],
-                "type": 0
-              }
-            },
-            {
-              "docs": [],
-              "indexed": false,
-              "label": "id",
-              "type": {
-                "displayName": [
-                  "u32"
-                ],
-                "type": 0
-              }
-            }
-          ],
-          "docs": [
-            " Defines an event that is emitted every time value is incremented."
-          ],
-          "label": "BulletinPosted"
-        },
-        {
-          "args": [
-            {
-              "docs": [],
-              "indexed": true,
-              "label": "author",
-              "type": {
-                "displayName": [
-                  "AccountId"
-                ],
-                "type": 2
-              }
-            },
-            {
-              "docs": [],
-              "indexed": false,
-              "label": "id",
-              "type": {
-                "displayName": [
-                  "u32"
-                ],
-                "type": 0
-              }
-            }
-          ],
-          "docs": [],
-          "label": "BulletinRemoved"
-        }
-      ],
-      "messages": [
-        {
-          "args": [
-            {
-              "label": "expires_after",
-              "type": {
-                "displayName": [
-                  "BlockNumber"
-                ],
-                "type": 0
-              }
-            },
-            {
-              "label": "text",
-              "type": {
-                "displayName": [
-                  "String"
-                ],
-                "type": 8
-              }
-            }
-          ],
-          "docs": [
-            " Adds new post to the \"bulletin board\".",
-            " Parameters of the post are:",
-            " * `expires_after` - block number until which this post should be",
-            "   considered valid.",
-            " * `test` - text of the new post.",
-            " Accepts a value (token) transfer if the post needs to be paid for.",
-            "",
-            " Fails if any of the following is true:",
-            " * not enough tokens have been transferred to cover the cost of",
-            "   posting,",
-            " * there already exists a post from the caller's account.",
-            "",
-            " # Note",
-            "",
-            " The method needs to be annotated with `payable`; only then it is",
-            " allowed to receive value as part of the call."
-          ],
-          "label": "post",
-          "mutates": true,
-          "payable": true,
-          "returnType": {
-            "displayName": [
-              "Result"
-            ],
-            "type": 12
-          },
-          "selector": "0x71af5d1f"
-        },
-        {
-          "args": [],
-          "docs": [
-            " Deletes the post from the caller (if exists)."
-          ],
-          "label": "delete",
-          "mutates": true,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "Result"
-            ],
-            "type": 12
-          },
-          "selector": "0x55ddc8ac"
-        },
-        {
-          "args": [
-            {
-              "label": "account_id",
-              "type": {
-                "displayName": [
-                  "AccountId"
-                ],
-                "type": 2
-              }
-            }
-          ],
-          "docs": [
-            " Returns the post created by the caller."
-          ],
-          "label": "get_by_account",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "Option"
-            ],
-            "type": 16
-          },
-          "selector": "0xd2137672"
-        },
-        {
-          "args": [
-            {
-              "label": "id",
-              "type": {
-                "displayName": [
-                  "u32"
-                ],
-                "type": 0
-              }
-            }
-          ],
-          "docs": [
-            " Returns the post referenced by the ID of the bulletin."
-          ],
-          "label": "get_by_id",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "Option"
-            ],
-            "type": 16
-          },
-          "selector": "0x5a35c742"
-        },
-        {
-          "args": [],
-          "docs": [
-            " Returns an address of `highlighted_posts` board contract instance."
-          ],
-          "label": "get_highlights_board",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "Option"
-            ],
-            "type": 17
-          },
-          "selector": "0xf26af424"
-        },
-        {
-          "args": [],
-          "docs": [
-            " Terminates the contract, iff the board is empty, with the caller as",
-            " beneficiary."
-          ],
-          "label": "teminate_contract",
-          "mutates": true,
-          "payable": false,
-          "returnType": null,
-          "selector": "0xf78e3bbe"
-        },
-        {
-          "args": [],
-          "docs": [
-            " Returns a price for highlighting the post for 1 block."
-          ],
-          "label": "get_highlight_price_per_block",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "u128"
-            ],
-            "type": 10
-          },
-          "selector": "0xc1d4fd47"
-        },
-        {
-          "args": [],
-          "docs": [
-            " Returns all currently visible posts' authors."
-          ],
-          "label": "get_posts_authors",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "Vec"
-            ],
-            "type": 9
-          },
-          "selector": "0x4e4f9cec"
-        }
-      ]
-    },
-    "storage": {
-      "struct": {
-        "fields": [
-          {
-            "layout": {
-              "cell": {
-                "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
-                "ty": 0
-              }
-            },
-            "name": "id_counter"
-          },
-          {
-            "layout": {
-              "cell": {
-                "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
-                "ty": 1
-              }
-            },
-            "name": "id_map"
-          },
-          {
-            "layout": {
-              "cell": {
-                "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
-                "ty": 6
-              }
-            },
-            "name": "bulletin_map"
-          },
-          {
-            "layout": {
-              "cell": {
-                "key": "0x0300000000000000000000000000000000000000000000000000000000000000",
-                "ty": 9
-              }
-            },
-            "name": "post_authors"
-          },
-          {
-            "layout": {
-              "cell": {
-                "key": "0x0400000000000000000000000000000000000000000000000000000000000000",
-                "ty": 10
-              }
-            },
-            "name": "price_per_block_listing"
-          },
-          {
-            "layout": {
-              "cell": {
-                "key": "0x0500000000000000000000000000000000000000000000000000000000000000",
-                "ty": 0
-              }
-            },
-            "name": "elements_count"
-          },
-          {
-            "layout": {
-              "enum": {
-                "dispatchKey": "0x0600000000000000000000000000000000000000000000000000000000000000",
-                "variants": {
-                  "0": {
-                    "fields": [
-                      {
-                        "layout": {
-                          "cell": {
-                            "key": "0x0700000000000000000000000000000000000000000000000000000000000000",
-                            "ty": 2
-                          }
-                        },
-                        "name": null
-                      }
-                    ]
-                  },
-                  "1": {
-                    "fields": []
-                  }
-                }
-              }
-            },
-            "name": "highlighted_posts_board"
-          }
-        ]
-      }
-    },
-    "types": [
+  "spec": {
+    "constructors": [
       {
-        "id": 0,
-        "type": {
-          "def": {
-            "primitive": "u32"
+        "args": [
+          {
+            "label": "version",
+            "type": {
+              "displayName": [
+                "u8"
+              ],
+              "type": 3
+            }
+          },
+          {
+            "label": "price_per_block_listing",
+            "type": {
+              "displayName": [
+                "u128"
+              ],
+              "type": 6
+            }
+          },
+          {
+            "label": "highlighted_posts_board_hash",
+            "type": {
+              "displayName": [
+                "Hash"
+              ],
+              "type": 7
+            }
           }
-        }
+        ],
+        "docs": [
+          "Creates an instance of the bulletin board contract.",
+          "- `version` is the version of contract's  Works also as salt for",
+          "  deployment of `highlighted_posts_board_hash` contract so when",
+          "  `BulletinBoard::new` is called from the same account, use a",
+          "  different `version` to re-instantiate it.",
+          "- `price_per_block_listing` specifies the price of listing the",
+          "post for every block.",
+          "- `highlighted_posts_board` argument is a code hash of",
+          "the contract we will instantiate."
+        ],
+        "label": "new",
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink_primitives",
+            "ConstructorResult"
+          ],
+          "type": 8
+        },
+        "selector": "0x9bae9d5e"
       },
       {
-        "id": 1,
-        "type": {
-          "def": {
-            "composite": {
-              "fields": [
-                {
-                  "name": "offset_key",
-                  "type": 5,
-                  "typeName": "Key"
-                }
-              ]
+        "args": [],
+        "docs": [
+          "Creates an instance of `BulletinBoard` contract where posting is",
+          "\"free\"."
+        ],
+        "label": "free",
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink_primitives",
+            "ConstructorResult"
+          ],
+          "type": 8
+        },
+        "selector": "0xec4dfb7c"
+      }
+    ],
+    "docs": [],
+    "events": [
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "author",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
             }
           },
-          "params": [
-            {
-              "name": "K",
-              "type": 2
-            },
-            {
-              "name": "V",
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "expires_at",
+            "type": {
+              "displayName": [
+                "BlockNumber"
+              ],
               "type": 0
             }
-          ],
-          "path": [
-            "ink_storage",
-            "lazy",
-            "mapping",
-            "Mapping"
-          ]
-        }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "docs": [
+          " Defines an event that is emitted every time value is incremented."
+        ],
+        "label": "BulletinPosted"
       },
       {
-        "id": 2,
-        "type": {
-          "def": {
-            "composite": {
-              "fields": [
-                {
-                  "type": 3,
-                  "typeName": "[u8; 32]"
-                }
-              ]
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "author",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
             }
           },
-          "path": [
-            "ink_env",
-            "types",
-            "AccountId"
-          ]
-        }
-      },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "docs": [],
+        "label": "BulletinRemoved"
+      }
+    ],
+    "lang_error": {
+      "displayName": [
+        "ink",
+        "LangError"
+      ],
+      "type": 10
+    },
+    "messages": [
       {
-        "id": 3,
-        "type": {
-          "def": {
-            "array": {
-              "len": 32,
+        "args": [
+          {
+            "label": "expires_after",
+            "type": {
+              "displayName": [
+                "BlockNumber"
+              ],
+              "type": 0
+            }
+          },
+          {
+            "label": "text",
+            "type": {
+              "displayName": [
+                "String"
+              ],
               "type": 4
             }
           }
-        }
+        ],
+        "docs": [
+          " Adds new post to the \"bulletin board\".",
+          " Parameters of the post are:",
+          " * `expires_after` - block number until which this post should be",
+          "   considered valid.",
+          " * `test` - text of the new post.",
+          " Accepts a value (token) transfer if the post needs to be paid for.",
+          "",
+          " Fails if any of the following is true:",
+          " * not enough tokens have been transferred to cover the cost of",
+          "   posting,",
+          " * there already exists a post from the caller's account.",
+          "",
+          " # Note",
+          "",
+          " The method needs to be annotated with `payable` - only then it is",
+          " allowed to receive value as part of the call."
+        ],
+        "label": "post",
+        "mutates": true,
+        "payable": true,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 11
+        },
+        "selector": "0x71af5d1f"
       },
       {
-        "id": 4,
-        "type": {
-          "def": {
-            "primitive": "u8"
+        "args": [],
+        "docs": [
+          " Deletes the post from the caller (if exists)."
+        ],
+        "label": "delete",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 11
+        },
+        "selector": "0x55ddc8ac"
+      },
+      {
+        "args": [
+          {
+            "label": "account_id",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
           }
-        }
+        ],
+        "docs": [
+          " Returns the post created by the caller."
+        ],
+        "label": "get_by_account",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 15
+        },
+        "selector": "0xd2137672"
       },
       {
-        "id": 5,
-        "type": {
-          "def": {
-            "composite": {
-              "fields": [
-                {
-                  "type": 3,
-                  "typeName": "[u8; 32]"
-                }
-              ]
-            }
-          },
-          "path": [
-            "ink_primitives",
-            "Key"
-          ]
-        }
-      },
-      {
-        "id": 6,
-        "type": {
-          "def": {
-            "composite": {
-              "fields": [
-                {
-                  "name": "offset_key",
-                  "type": 5,
-                  "typeName": "Key"
-                }
-              ]
-            }
-          },
-          "params": [
-            {
-              "name": "K",
+        "args": [
+          {
+            "label": "id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
               "type": 0
-            },
-            {
-              "name": "V",
-              "type": 7
-            }
-          ],
-          "path": [
-            "ink_storage",
-            "lazy",
-            "mapping",
-            "Mapping"
-          ]
-        }
-      },
-      {
-        "id": 7,
-        "type": {
-          "def": {
-            "composite": {
-              "fields": [
-                {
-                  "name": "author",
-                  "type": 2,
-                  "typeName": "AccountId"
-                },
-                {
-                  "name": "posted_at",
-                  "type": 0,
-                  "typeName": "BlockNumber"
-                },
-                {
-                  "name": "expires_at",
-                  "type": 0,
-                  "typeName": "BlockNumber"
-                },
-                {
-                  "name": "text",
-                  "type": 8,
-                  "typeName": "String"
-                }
-              ]
-            }
-          },
-          "path": [
-            "bulletin_board",
-            "bulletin_board",
-            "Bulletin"
-          ]
-        }
-      },
-      {
-        "id": 8,
-        "type": {
-          "def": {
-            "primitive": "str"
-          }
-        }
-      },
-      {
-        "id": 9,
-        "type": {
-          "def": {
-            "sequence": {
-              "type": 2
             }
           }
-        }
-      },
-      {
-        "id": 10,
-        "type": {
-          "def": {
-            "primitive": "u128"
-          }
-        }
-      },
-      {
-        "id": 11,
-        "type": {
-          "def": {
-            "composite": {
-              "fields": [
-                {
-                  "type": 3,
-                  "typeName": "[u8; 32]"
-                }
-              ]
-            }
-          },
-          "path": [
-            "ink_env",
-            "types",
-            "Hash"
-          ]
-        }
-      },
-      {
-        "id": 12,
-        "type": {
-          "def": {
-            "variant": {
-              "variants": [
-                {
-                  "fields": [
-                    {
-                      "type": 13
-                    }
-                  ],
-                  "index": 0,
-                  "name": "Ok"
-                },
-                {
-                  "fields": [
-                    {
-                      "type": 14
-                    }
-                  ],
-                  "index": 1,
-                  "name": "Err"
-                }
-              ]
-            }
-          },
-          "params": [
-            {
-              "name": "T",
-              "type": 13
-            },
-            {
-              "name": "E",
-              "type": 14
-            }
+        ],
+        "docs": [
+          " Returns the post referenced by the ID of the bulletin."
+        ],
+        "label": "get_by_id",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
           ],
-          "path": [
-            "Result"
-          ]
-        }
+          "type": 15
+        },
+        "selector": "0x5a35c742"
       },
       {
-        "id": 13,
-        "type": {
-          "def": {
-            "tuple": []
-          }
-        }
-      },
-      {
-        "id": 14,
-        "type": {
-          "def": {
-            "variant": {
-              "variants": [
-                {
-                  "index": 0,
-                  "name": "BulletinAlreadyExists"
-                },
-                {
-                  "index": 1,
-                  "name": "BulletinNotFound"
-                },
-                {
-                  "fields": [
-                    {
-                      "type": 10,
-                      "typeName": "u128"
-                    }
-                  ],
-                  "index": 2,
-                  "name": "ListingCostTooLow"
-                },
-                {
-                  "fields": [
-                    {
-                      "type": 15,
-                      "typeName": "HighlightedPostsError"
-                    }
-                  ],
-                  "index": 3,
-                  "name": "HighlightError"
-                },
-                {
-                  "fields": [
-                    {
-                      "type": 8,
-                      "typeName": "String"
-                    }
-                  ],
-                  "index": 4,
-                  "name": "InkEnvError"
-                }
-              ]
-            }
-          },
-          "path": [
-            "bulletin_board",
-            "bulletin_board",
-            "BulletinBoardError"
-          ]
-        }
-      },
-      {
-        "id": 15,
-        "type": {
-          "def": {
-            "variant": {
-              "variants": [
-                {
-                  "index": 0,
-                  "name": "AlreadyHighlighted"
-                },
-                {
-                  "index": 1,
-                  "name": "HighlightNotFound"
-                },
-                {
-                  "index": 2,
-                  "name": "AccessDenied"
-                }
-              ]
-            }
-          },
-          "path": [
-            "highlighted_posts",
-            "highlighted_posts",
-            "HighlightedPostsError"
-          ]
-        }
-      },
-      {
-        "id": 16,
-        "type": {
-          "def": {
-            "variant": {
-              "variants": [
-                {
-                  "index": 0,
-                  "name": "None"
-                },
-                {
-                  "fields": [
-                    {
-                      "type": 7
-                    }
-                  ],
-                  "index": 1,
-                  "name": "Some"
-                }
-              ]
-            }
-          },
-          "params": [
-            {
-              "name": "T",
-              "type": 7
-            }
+        "args": [],
+        "docs": [
+          " Returns an address of `highlighted_posts` board contract"
+        ],
+        "label": "get_highlights_board",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
           ],
-          "path": [
-            "Option"
-          ]
-        }
+          "type": 18
+        },
+        "selector": "0xf26af424"
       },
       {
-        "id": 17,
-        "type": {
-          "def": {
-            "variant": {
-              "variants": [
-                {
-                  "index": 0,
-                  "name": "None"
-                },
-                {
-                  "fields": [
-                    {
-                      "type": 2
-                    }
-                  ],
-                  "index": 1,
-                  "name": "Some"
-                }
-              ]
-            }
-          },
-          "params": [
-            {
-              "name": "T",
-              "type": 2
-            }
+        "args": [],
+        "docs": [
+          " Terminates the contract, iff the board is empty, with the caller as",
+          " beneficiary."
+        ],
+        "label": "teminate_contract",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
           ],
-          "path": [
-            "Option"
-          ]
-        }
+          "type": 8
+        },
+        "selector": "0xf78e3bbe"
+      },
+      {
+        "args": [],
+        "docs": [
+          " Returns a price for highlighting the post for 1 block."
+        ],
+        "label": "get_highlight_price_per_block",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 20
+        },
+        "selector": "0xc1d4fd47"
+      },
+      {
+        "args": [],
+        "docs": [
+          " Returns all currently visible posts' authors."
+        ],
+        "label": "get_posts_authors",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 21
+        },
+        "selector": "0x4e4f9cec"
       }
     ]
-  }
+  },
+  "storage": {
+    "root": {
+      "layout": {
+        "struct": {
+          "fields": [
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 0
+                }
+              },
+              "name": "id_counter"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "leaf": {
+                      "key": "0x000130fa",
+                      "ty": 0
+                    }
+                  },
+                  "root_key": "0x000130fa"
+                }
+              },
+              "name": "id_map"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x36aad906",
+                              "ty": 1
+                            }
+                          },
+                          "name": "author"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x36aad906",
+                              "ty": 0
+                            }
+                          },
+                          "name": "posted_at"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x36aad906",
+                              "ty": 0
+                            }
+                          },
+                          "name": "expires_at"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x36aad906",
+                              "ty": 4
+                            }
+                          },
+                          "name": "text"
+                        }
+                      ],
+                      "name": "Bulletin"
+                    }
+                  },
+                  "root_key": "0x36aad906"
+                }
+              },
+              "name": "bulletin_map"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 5
+                }
+              },
+              "name": "post_authors"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 6
+                }
+              },
+              "name": "price_per_block_listing"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 0
+                }
+              },
+              "name": "elements_count"
+            },
+            {
+              "layout": {
+                "enum": {
+                  "dispatchKey": "0x00000000",
+                  "name": "Option",
+                  "variants": {
+                    "0": {
+                      "fields": [],
+                      "name": "None"
+                    },
+                    "1": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x00000000",
+                              "ty": 1
+                            }
+                          },
+                          "name": "0"
+                        }
+                      ],
+                      "name": "Some"
+                    }
+                  }
+                }
+              },
+              "name": "highlighted_posts_board"
+            }
+          ],
+          "name": "BulletinBoard"
+        }
+      },
+      "root_key": "0x00000000"
+    }
+  },
+  "types": [
+    {
+      "id": 0,
+      "type": {
+        "def": {
+          "primitive": "u32"
+        }
+      }
+    },
+    {
+      "id": 1,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "type": 2,
+                "typeName": "[u8; 32]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "types",
+          "AccountId"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "type": {
+        "def": {
+          "array": {
+            "len": 32,
+            "type": 3
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": {
+        "def": {
+          "primitive": "u8"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": {
+        "def": {
+          "primitive": "str"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 1
+          }
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": {
+        "def": {
+          "primitive": "u128"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "type": 2,
+                "typeName": "[u8; 32]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "types",
+          "Hash"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 9
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 9
+          },
+          {
+            "name": "E",
+            "type": 10
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "type": {
+        "def": {
+          "tuple": []
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 1,
+                "name": "CouldNotReadInput"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "LangError"
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 12
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 12
+          },
+          {
+            "name": "E",
+            "type": 10
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 9
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 13
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 9
+          },
+          {
+            "name": "E",
+            "type": 13
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "BulletinAlreadyExists"
+              },
+              {
+                "index": 1,
+                "name": "BulletinNotFound"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 6,
+                    "typeName": "u128"
+                  }
+                ],
+                "index": 2,
+                "name": "ListingCostTooLow"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 14,
+                    "typeName": "HighlightedPostsError"
+                  }
+                ],
+                "index": 3,
+                "name": "HighlightError"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 4,
+                    "typeName": "String"
+                  }
+                ],
+                "index": 4,
+                "name": "InkEnvError"
+              }
+            ]
+          }
+        },
+        "path": [
+          "bulletin_board",
+          "bulletin_board",
+          "BulletinBoardError"
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "AlreadyHighlighted"
+              },
+              {
+                "index": 1,
+                "name": "HighlightNotFound"
+              },
+              {
+                "index": 2,
+                "name": "AccessDenied"
+              }
+            ]
+          }
+        },
+        "path": [
+          "highlighted_posts",
+          "highlighted_posts",
+          "HighlightedPostsError"
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 16
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 16
+          },
+          {
+            "name": "E",
+            "type": 10
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "None"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 17
+                  }
+                ],
+                "index": 1,
+                "name": "Some"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 17
+          }
+        ],
+        "path": [
+          "Option"
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "name": "author",
+                "type": 1,
+                "typeName": "AccountId"
+              },
+              {
+                "name": "posted_at",
+                "type": 0,
+                "typeName": "BlockNumber"
+              },
+              {
+                "name": "expires_at",
+                "type": 0,
+                "typeName": "BlockNumber"
+              },
+              {
+                "name": "text",
+                "type": 4,
+                "typeName": "String"
+              }
+            ]
+          }
+        },
+        "path": [
+          "bulletin_board",
+          "bulletin_board",
+          "Bulletin"
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 19
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 19
+          },
+          {
+            "name": "E",
+            "type": 10
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "None"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 1
+                  }
+                ],
+                "index": 1,
+                "name": "Some"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 1
+          }
+        ],
+        "path": [
+          "Option"
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 6
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 6
+          },
+          {
+            "name": "E",
+            "type": 10
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 5
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 5
+          },
+          {
+            "name": "E",
+            "type": 10
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    }
+  ],
+  "version": "4"
 }

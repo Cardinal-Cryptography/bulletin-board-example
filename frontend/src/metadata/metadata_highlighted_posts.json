@@ -1,8 +1,17 @@
 {
   "source": {
-    "hash": "0x26ed4495067a9bf70a3408cf92e7bfa58009436a1efda091fcc356a2c704f6f7",
-    "language": "ink! 3.4.0",
-    "compiler": "rustc 1.67.0-nightly"
+    "hash": "0x7d6417d3c4a510deff696d2b76bcedb67eac8de9ae8b81f32af02541bc8a7771",
+    "language": "ink! 4.0.0-beta",
+    "compiler": "rustc 1.64.0",
+    "build_info": {
+      "build_mode": "Release",
+      "cargo_contract_version": "2.0.0-beta.1",
+      "rust_toolchain": "stable-x86_64-unknown-linux-gnu",
+      "wasm_opt_settings": {
+        "keep_debug_symbols": false,
+        "optimization_passes": "Z"
+      }
+    }
   },
   "contract": {
     "name": "highlighted_posts",
@@ -11,447 +20,654 @@
       "[your_name] <[your_email]>"
     ]
   },
-  "V3": {
-    "spec": {
-      "constructors": [
-        {
-          "args": [],
-          "docs": [
-            "Constructor that initializes the contract with empty map."
+  "spec": {
+    "constructors": [
+      {
+        "args": [],
+        "docs": [
+          "Constructor that initializes the contract with empty map."
+        ],
+        "label": "new",
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink_primitives",
+            "ConstructorResult"
           ],
-          "label": "new",
-          "payable": false,
-          "selector": "0x9bae9d5e"
-        }
-      ],
-      "docs": [],
-      "events": [
-        {
-          "args": [
-            {
-              "docs": [],
-              "indexed": false,
-              "label": "author",
-              "type": {
-                "displayName": [
-                  "AccountId"
-                ],
-                "type": 0
-              }
-            },
-            {
-              "docs": [],
-              "indexed": false,
-              "label": "id",
-              "type": {
-                "displayName": [
-                  "u32"
-                ],
-                "type": 4
-              }
-            }
-          ],
-          "docs": [],
-          "label": "PostHighlighted"
+          "type": 5
         },
-        {
-          "args": [
-            {
-              "docs": [],
-              "indexed": false,
-              "label": "author",
-              "type": {
-                "displayName": [
-                  "AccountId"
-                ],
-                "type": 0
-              }
-            }
-          ],
-          "docs": [],
-          "label": "HighlightRemoved"
-        }
-      ],
-      "messages": [
-        {
-          "args": [
-            {
-              "label": "author",
-              "type": {
-                "displayName": [
-                  "AccountId"
-                ],
-                "type": 0
-              }
-            },
-            {
-              "label": "id",
-              "type": {
-                "displayName": [
-                  "u32"
-                ],
-                "type": 4
-              }
-            }
-          ],
-          "docs": [
-            " Adds the post to the highlighted set."
-          ],
-          "label": "add",
-          "mutates": true,
-          "payable": true,
-          "returnType": {
-            "displayName": [
-              "Result"
-            ],
-            "type": 7
-          },
-          "selector": "0x00000007"
-        },
-        {
-          "args": [
-            {
-              "label": "author",
-              "type": {
-                "displayName": [
-                  "AccountId"
-                ],
-                "type": 0
-              }
-            }
-          ],
-          "docs": [
-            " Deletes the post by the author.",
-            "",
-            " NOTE: This is rather unrealistic example where *anyone* can remove",
-            " any post but this contract is only meant to show how to do",
-            " cross-contract calls."
-          ],
-          "label": "delete_by_author",
-          "mutates": true,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "Result"
-            ],
-            "type": 7
-          },
-          "selector": "0x00000008"
-        },
-        {
-          "args": [
-            {
-              "label": "author",
-              "type": {
-                "displayName": [
-                  "AccountId"
-                ],
-                "type": 0
-              }
-            }
-          ],
-          "docs": [
-            " Simply returns the ID of the highlighted post by the `author`."
-          ],
-          "label": "get_by_author",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "Option"
-            ],
-            "type": 10
-          },
-          "selector": "0x00000009"
-        },
-        {
-          "args": [],
-          "docs": [
-            " Returns account IDs for which we have highlighted posts"
-          ],
-          "label": "highlighted_posts",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "Vec"
-            ],
-            "type": 6
-          },
-          "selector": "0x00000006"
-        },
-        {
-          "args": [],
-          "docs": [
-            " Returns an address of the contract/account that instantiated this",
-            " instance."
-          ],
-          "label": "created_by",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "AccountId"
-            ],
-            "type": 0
-          },
-          "selector": "0x574d8fec"
-        }
-      ]
-    },
-    "storage": {
-      "struct": {
-        "fields": [
+        "selector": "0x9bae9d5e"
+      }
+    ],
+    "docs": [],
+    "events": [
+      {
+        "args": [
           {
-            "layout": {
-              "cell": {
-                "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
-                "ty": 0
-              }
-            },
-            "name": "created_by"
+            "docs": [],
+            "indexed": false,
+            "label": "author",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 0
+            }
           },
           {
-            "layout": {
-              "cell": {
-                "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
-                "ty": 3
-              }
-            },
-            "name": "highlighted"
-          },
-          {
-            "layout": {
-              "cell": {
-                "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
-                "ty": 6
-              }
-            },
-            "name": "highlighted_ids"
+            "docs": [],
+            "indexed": false,
+            "label": "id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
           }
+        ],
+        "docs": [],
+        "label": "PostHighlighted"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "author",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "docs": [],
+        "label": "HighlightRemoved"
+      }
+    ],
+    "lang_error": {
+      "displayName": [
+        "ink",
+        "LangError"
+      ],
+      "type": 7
+    },
+    "messages": [
+      {
+        "args": [
+          {
+            "label": "author",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 0
+            }
+          },
+          {
+            "label": "id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
+          }
+        ],
+        "docs": [
+          " Adds the post to the highlighted set."
+        ],
+        "label": "add",
+        "mutates": true,
+        "payable": true,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0x00000007"
+      },
+      {
+        "args": [
+          {
+            "label": "author",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "docs": [
+          " Deletes the post by the author.",
+          "",
+          " NOTE: This is rather unrealistic example where *anyone* can remove",
+          " any post but this contract is only meant to show how to do",
+          " cross-contract calls."
+        ],
+        "label": "delete_by_author",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0x00000008"
+      },
+      {
+        "args": [
+          {
+            "label": "author",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "docs": [
+          " Simply returns the ID of the highlighted post by the `author`."
+        ],
+        "label": "get_by_author",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 11
+        },
+        "selector": "0x00000009"
+      },
+      {
+        "args": [],
+        "docs": [
+          " Returns account IDs for which we have highlighted posts"
+        ],
+        "label": "highlighted_posts",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 13
+        },
+        "selector": "0x00000006"
+      },
+      {
+        "args": [],
+        "docs": [
+          " Returns an address of the contract/account that instantiated this",
+          " instance."
+        ],
+        "label": "created_by",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 14
+        },
+        "selector": "0x574d8fec"
+      }
+    ]
+  },
+  "storage": {
+    "root": {
+      "layout": {
+        "struct": {
+          "fields": [
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 0
+                }
+              },
+              "name": "created_by"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "leaf": {
+                      "key": "0xf9adb30b",
+                      "ty": 3
+                    }
+                  },
+                  "root_key": "0xf9adb30b"
+                }
+              },
+              "name": "highlighted"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 4
+                }
+              },
+              "name": "highlighted_ids"
+            }
+          ],
+          "name": "HighlightedPosts"
+        }
+      },
+      "root_key": "0x00000000"
+    }
+  },
+  "types": [
+    {
+      "id": 0,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "type": 1,
+                "typeName": "[u8; 32]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "types",
+          "AccountId"
         ]
       }
     },
-    "types": [
-      {
-        "id": 0,
-        "type": {
-          "def": {
-            "composite": {
-              "fields": [
-                {
-                  "type": 1,
-                  "typeName": "[u8; 32]"
-                }
-              ]
-            }
-          },
-          "path": [
-            "ink_env",
-            "types",
-            "AccountId"
-          ]
-        }
-      },
-      {
-        "id": 1,
-        "type": {
-          "def": {
-            "array": {
-              "len": 32,
-              "type": 2
-            }
+    {
+      "id": 1,
+      "type": {
+        "def": {
+          "array": {
+            "len": 32,
+            "type": 2
           }
-        }
-      },
-      {
-        "id": 2,
-        "type": {
-          "def": {
-            "primitive": "u8"
-          }
-        }
-      },
-      {
-        "id": 3,
-        "type": {
-          "def": {
-            "composite": {
-              "fields": [
-                {
-                  "name": "offset_key",
-                  "type": 5,
-                  "typeName": "Key"
-                }
-              ]
-            }
-          },
-          "params": [
-            {
-              "name": "K",
-              "type": 0
-            },
-            {
-              "name": "V",
-              "type": 4
-            }
-          ],
-          "path": [
-            "ink_storage",
-            "lazy",
-            "mapping",
-            "Mapping"
-          ]
-        }
-      },
-      {
-        "id": 4,
-        "type": {
-          "def": {
-            "primitive": "u32"
-          }
-        }
-      },
-      {
-        "id": 5,
-        "type": {
-          "def": {
-            "composite": {
-              "fields": [
-                {
-                  "type": 1,
-                  "typeName": "[u8; 32]"
-                }
-              ]
-            }
-          },
-          "path": [
-            "ink_primitives",
-            "Key"
-          ]
-        }
-      },
-      {
-        "id": 6,
-        "type": {
-          "def": {
-            "sequence": {
-              "type": 0
-            }
-          }
-        }
-      },
-      {
-        "id": 7,
-        "type": {
-          "def": {
-            "variant": {
-              "variants": [
-                {
-                  "fields": [
-                    {
-                      "type": 8
-                    }
-                  ],
-                  "index": 0,
-                  "name": "Ok"
-                },
-                {
-                  "fields": [
-                    {
-                      "type": 9
-                    }
-                  ],
-                  "index": 1,
-                  "name": "Err"
-                }
-              ]
-            }
-          },
-          "params": [
-            {
-              "name": "T",
-              "type": 8
-            },
-            {
-              "name": "E",
-              "type": 9
-            }
-          ],
-          "path": [
-            "Result"
-          ]
-        }
-      },
-      {
-        "id": 8,
-        "type": {
-          "def": {
-            "tuple": []
-          }
-        }
-      },
-      {
-        "id": 9,
-        "type": {
-          "def": {
-            "variant": {
-              "variants": [
-                {
-                  "index": 0,
-                  "name": "AlreadyHighlighted"
-                },
-                {
-                  "index": 1,
-                  "name": "HighlightNotFound"
-                },
-                {
-                  "index": 2,
-                  "name": "AccessDenied"
-                }
-              ]
-            }
-          },
-          "path": [
-            "highlighted_posts",
-            "highlighted_posts",
-            "HighlightedPostsError"
-          ]
-        }
-      },
-      {
-        "id": 10,
-        "type": {
-          "def": {
-            "variant": {
-              "variants": [
-                {
-                  "index": 0,
-                  "name": "None"
-                },
-                {
-                  "fields": [
-                    {
-                      "type": 4
-                    }
-                  ],
-                  "index": 1,
-                  "name": "Some"
-                }
-              ]
-            }
-          },
-          "params": [
-            {
-              "name": "T",
-              "type": 4
-            }
-          ],
-          "path": [
-            "Option"
-          ]
         }
       }
-    ]
-  }
+    },
+    {
+      "id": 2,
+      "type": {
+        "def": {
+          "primitive": "u8"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": {
+        "def": {
+          "primitive": "u32"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 0
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 6
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 7
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 6
+          },
+          {
+            "name": "E",
+            "type": 7
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "type": {
+        "def": {
+          "tuple": []
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 1,
+                "name": "CouldNotReadInput"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "LangError"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 9
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 7
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 9
+          },
+          {
+            "name": "E",
+            "type": 7
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 6
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 6
+          },
+          {
+            "name": "E",
+            "type": 10
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "AlreadyHighlighted"
+              },
+              {
+                "index": 1,
+                "name": "HighlightNotFound"
+              },
+              {
+                "index": 2,
+                "name": "AccessDenied"
+              }
+            ]
+          }
+        },
+        "path": [
+          "highlighted_posts",
+          "highlighted_posts",
+          "HighlightedPostsError"
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 12
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 7
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 12
+          },
+          {
+            "name": "E",
+            "type": 7
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "None"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 3
+                  }
+                ],
+                "index": 1,
+                "name": "Some"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 3
+          }
+        ],
+        "path": [
+          "Option"
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 4
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 7
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 4
+          },
+          {
+            "name": "E",
+            "type": 7
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 0
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 7
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 0
+          },
+          {
+            "name": "E",
+            "type": 7
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    }
+  ],
+  "version": "4"
 }
