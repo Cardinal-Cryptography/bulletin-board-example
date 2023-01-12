@@ -1,6 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
 import { ContractPromise } from '@polkadot/api-contract';
 import { web3FromSource } from '@polkadot/extension-dapp';
+import type { WeightV2 } from '@polkadot/types/interfaces';
+import BN from 'bn.js';
 
 import { displayErrorToast, displaySuccessToast } from 'components/NotificationToast';
 
@@ -24,13 +26,16 @@ export const sendPost = async (
     return;
   }
   if (!loggedUser.meta.source) return;
-  const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board);
+  const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board_address);
   const injector = await web3FromSource(loggedUser.meta.source);
-
+  const gasLimit = api.registry.createType('WeightV2', {
+    refTime: new BN('10000000000'),
+    proofSize: new BN('10000000000'),
+  }) as WeightV2;
   await contract.tx
     .post(
       {
-        gasLimit: GAS_LIMIT_VALUE,
+        gasLimit,
         value: totalPrice,
       },
       expiresAfter,
