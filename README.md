@@ -40,7 +40,7 @@ In the root directory, run `make setup`. This will:
 
 ### Running frontend
 
-In `/frontend` directory, run `npm start`. This should open a new tab in your default browser that connects to your local chain.
+In `/frontend` directory, run `export REACT_APP_PROVIDER_URL=ws://localhost:9944 && npm start`. This should open a new tab in your default browser that connects to your local chain.
 
 ### Working with polkadot.js wallet extension
 
