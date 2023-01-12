@@ -8,6 +8,8 @@ export const GAS_LIMIT_VALUE = 5 * 22361000000; // it was checked that gasRequir
 
 export const MAX_CALL_WEIGHT = new BN(5_000_000_000_000).isub(BN_ONE);
 
+// For read-only queries we don't need the exact gas limit
+// as the account will not be charged for making the call.
 export function readOnlyGasLimit(api: ApiPromise): WeightV2 {
   return api.registry.createType('WeightV2', {
     refTime: new BN(1_000_000_000_000),
