@@ -20,7 +20,7 @@ export const getHighlightedPostsAuthors = async (
     return null;
   }
   const gasLimit = api.registry.createType('WeightV2', {
-    refTime: new BN('10000000000'),
+    refTime: new BN('100000000000'),
     proofSize: new BN('10000000000'),
   }) as WeightV2;
   const contract = new ContractPromise(api, highlightedPostsMetadata, addresses.highlighted_posts_address);
@@ -31,6 +31,7 @@ export const getHighlightedPostsAuthors = async (
     return output.toHuman() as string[];
   }
   if (result.isErr) {
+    console.log(result.toHuman());
     displayErrorToast(ErrorToastMessages.ERROR_FETCHING_DATA);
   }
   return null;

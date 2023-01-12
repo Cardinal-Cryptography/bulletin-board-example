@@ -23,7 +23,7 @@ export const deletePost = async (
     return;
   }
   const gasLimit = api.registry.createType('WeightV2', {
-    refTime: new BN('10000000000'),
+    refTime: new BN('100000000000'),
     proofSize: new BN('10000000000'),
   }) as WeightV2;
   if (!loggedUser.meta.source) return;

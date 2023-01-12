@@ -28,7 +28,7 @@ export const getPostByAccount = async (
     return null;
   }
   const gasLimit = api.registry.createType('WeightV2', {
-    refTime: new BN('10000000000'),
+    refTime: new BN('100000000000'),
     proofSize: new BN('10000000000'),
   }) as WeightV2;
   const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board_address);
@@ -43,6 +43,7 @@ export const getPostByAccount = async (
     return output.toHuman() as PostByAccount;
   }
   if (result.isErr) {
+    console.log(result.toHuman());
     displayErrorToast(ErrorToastMessages.ERROR_FETCHING_DATA);
   }
   return null;

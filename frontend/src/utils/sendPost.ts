@@ -29,7 +29,7 @@ export const sendPost = async (
   const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board_address);
   const injector = await web3FromSource(loggedUser.meta.source);
   const gasLimit = api.registry.createType('WeightV2', {
-    refTime: new BN('10000000000'),
+    refTime: new BN('100000000000'),
     proofSize: new BN('10000000000'),
   }) as WeightV2;
   await contract.tx
