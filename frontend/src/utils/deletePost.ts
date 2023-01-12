@@ -27,7 +27,7 @@ export const deletePost = async (
     proofSize: new BN('10000000000'),
   }) as WeightV2;
   if (!loggedUser.meta.source) return;
-  const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board);
+  const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board_code_hash);
   const injector = await web3FromSource(loggedUser.meta.source);
 
   await contract.tx

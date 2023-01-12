@@ -26,7 +26,7 @@ export const sendPost = async (
     return;
   }
   if (!loggedUser.meta.source) return;
-  const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board);
+  const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board_address);
   const injector = await web3FromSource(loggedUser.meta.source);
   const gasLimit = api.registry.createType('WeightV2', {
     refTime: new BN('10000000000'),

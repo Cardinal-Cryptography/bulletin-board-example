@@ -23,7 +23,7 @@ export const getHighlightedPostsAuthors = async (
     refTime: new BN('10000000000'),
     proofSize: new BN('10000000000'),
   }) as WeightV2;
-  const contract = new ContractPromise(api, highlightedPostsMetadata, addresses.highlighted_posts);
+  const contract = new ContractPromise(api, highlightedPostsMetadata, addresses.highlighted_posts_address);
   const { result, output } = await contract.query.highlightedPosts(contract.address, {
     gasLimit,
   });

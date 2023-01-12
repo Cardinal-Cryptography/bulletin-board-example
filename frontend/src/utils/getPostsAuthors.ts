@@ -21,7 +21,7 @@ export const getPostsAuthors = async (api: ApiPromise | null): Promise<string[] 
     refTime: new BN('10000000000'),
     proofSize: new BN('10000000000'),
   }) as WeightV2;
-  const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board);
+  const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board_address);
   const { result, output } = await contract.query.getPostsAuthors(contract.address, {
     gasLimit,
   });

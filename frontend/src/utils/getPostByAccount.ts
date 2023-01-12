@@ -31,7 +31,7 @@ export const getPostByAccount = async (
     refTime: new BN('10000000000'),
     proofSize: new BN('10000000000'),
   }) as WeightV2;
-  const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board);
+  const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board_address);
   const { result, output } = await contract.query.getByAccount(
     contract.address,
     {

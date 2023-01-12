@@ -26,12 +26,17 @@ By default, node will bind its websocket endpoint to port **9944**. Make sure th
 ```
 If it bound to a different port your frontend instance will not connect properly - it tries to bind to 9944 port. In that case, either make sure there are no other `substrate-contracts-node` running (by killing them with `make chain-stop`) or change the port in the frontend app.
 
+### Building contracts
+
+In `/contracts` directory run `make build-all` to build both contrats.
+
 ### Deploying contracts
 
-In `/contracts` directory, run:
-
-1. Build all contracts: `make build-all`.
-2. Deploy contracts: `make deploy`
+In the root directory, run `make setup`. This will:
+* deploy both contracts to the local chain
+* instantiate them
+* record their addresses
+* update addresses and contracts' metadata files in the frontend directory
 
 ### Running frontend
 
