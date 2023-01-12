@@ -163,7 +163,7 @@ const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
     };
 
     getAllPostsAuthors().then((authors) => {
-      console.log(authors)
+      console.log(authors);
       authors?.forEach((author) => {
         getPostByAuthor(author).then((post) => {
           if (post) {

@@ -1,11 +1,9 @@
 import { ContractPromise } from '@polkadot/api-contract';
 import { ApiPromise } from '@polkadot/api';
-import type { WeightV2 } from '@polkadot/types/interfaces';
-import BN from 'bn.js';
 
 import { displayErrorToast } from 'components/NotificationToast';
 
-import { ErrorToastMessages, GAS_LIMIT_VALUE } from 'shared/constants';
+import { ErrorToastMessages, readOnlyGasLimit } from 'shared/constants';
 
 import highlightedPostsMetadata from '../metadata/metadata_highlighted_posts.json';
 import addresses from '../metadata/addresses.json';
@@ -19,11 +17,14 @@ export const getHighlightedPostsAuthors = async (
     displayErrorToast(ErrorToastMessages.ERROR_API_CONN);
     return null;
   }
-  const gasLimit = api.registry.createType('WeightV2', {
-    refTime: new BN('100000000000'),
-    proofSize: new BN('10000000000'),
-  }) as WeightV2;
-  const contract = new ContractPromise(api, highlightedPostsMetadata, addresses.highlighted_posts_address);
+  // For read-only calls we don't need the estimate as we won't be charged anything.
+  const gasLimit = readOnlyGasLimit(api);
+
+  const contract = new ContractPromise(
+    api,
+    highlightedPostsMetadata,
+    addresses.highlighted_posts_address
+  );
   const { result, output } = await contract.query.highlightedPosts(contract.address, {
     gasLimit,
   });
