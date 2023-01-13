@@ -17,6 +17,8 @@ import store from './redux/store';
 
 const INTERCOM_APP_ID = process.env.REACT_APP_INTERCOM_APP_ID ?? '';
 
+export type ApiPromiseType = ApiPromise | null;
+
 const App = (): JSX.Element => {
   const [api, setApi] = useState<ApiPromise | null>(null);
   const [, setLastChainBlock] = useState<number | null>(null);

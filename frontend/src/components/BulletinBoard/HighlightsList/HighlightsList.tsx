@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ApiPromise } from '@polkadot/api';
 import styled from 'styled-components';
 
 import SectionHeader from 'components/SectionHeader';
@@ -9,6 +8,7 @@ import { getPostByAccount, PostByAccount } from 'utils/getPostByAccount';
 import { getHighlightedPostsAuthors } from 'utils/getHighlightedPostsAuthors';
 
 import HighlightsRow from './HighlightsRow';
+import { ApiPromiseType } from '../../../App';
 
 const HighlightsListWrapper = styled.div`
   width: 100%;
@@ -144,16 +144,16 @@ const HighlightsBoardHeading = styled.div`
 `;
 
 interface HighlightsListProps {
-  api: ApiPromise | null;
+  api: ApiPromiseType;
 }
 
 const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
   const [highlightedPosts, setHighlightedPosts] = useState<PostByAccount[]>([]);
 
-  const getAllPostsAuthors = useCallback(async () => getHighlightedPostsAuthors(api), [api]);
+  const getAllPostsAuthors = useCallback(async () => api && getHighlightedPostsAuthors(api), [api]);
 
   const getPostByAuthor = useCallback(
-    async (accountId: string) => getPostByAccount(accountId, api),
+    async (accountId: string) => api && getPostByAccount(accountId, api),
     [api]
   );
 

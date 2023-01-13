@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { ApiPromise } from '@polkadot/api';
 import { useSelector } from 'react-redux';
 
 import Layout from 'components/Layout';
@@ -10,6 +9,8 @@ import { queries } from 'shared/layout';
 import { getHighlightPricePerBlock } from 'utils/getHighlightPricePerBlock';
 import { RootState } from 'redux/store';
 import { sendPost } from 'utils/sendPost';
+
+import { ApiPromiseType } from '../../App';
 
 const Wrapper = styled.div`
   color: ${({ theme }) => theme.colors.white};
@@ -90,7 +91,7 @@ const Wrapper = styled.div`
 `;
 
 interface PostPageProps {
-  api: ApiPromise | null;
+  api: ApiPromiseType;
 }
 
 const PostPage = ({ api }: PostPageProps): JSX.Element => {
@@ -102,7 +103,7 @@ const PostPage = ({ api }: PostPageProps): JSX.Element => {
   const loggedAccount = useSelector((state: RootState) => state.walletAccounts.account);
 
   const getHighlightBlockPrice = useCallback(async () => {
-    const fetchedPrice = await getHighlightPricePerBlock(api);
+    const fetchedPrice = api && (await getHighlightPricePerBlock(api));
     setHighlightPricePerBlock(fetchedPrice ?? 0);
   }, [api]);
 
@@ -122,7 +123,7 @@ const PostPage = ({ api }: PostPageProps): JSX.Element => {
   const handleSendPost = (): void => {
     if (!loggedAccount) return;
     const totalPrice = getHighlightTotalPrice();
-    sendPost(numOfBlocksHighlight, postText, totalPrice, api, loggedAccount);
+    if (api) sendPost(numOfBlocksHighlight, postText, totalPrice, api, loggedAccount);
   };
 
   return (

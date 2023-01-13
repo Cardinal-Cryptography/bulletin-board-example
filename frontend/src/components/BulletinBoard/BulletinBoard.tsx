@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { ApiPromise } from '@polkadot/api';
 import { useDispatch, useSelector } from 'react-redux';
 
 import HeroHeading from 'components/HeroHeading';
@@ -16,6 +15,7 @@ import { getPostByAccount, PostByAccount } from 'utils/getPostByAccount';
 
 import HighlightsList from './HighlightsList';
 import PostDetailsPopup from './PostDetailsPopup';
+import { ApiPromiseType } from '../../App';
 
 const Wrapper = styled.div`
   color: ${({ theme }) => theme.colors.white};
@@ -35,7 +35,7 @@ const BulletinBoardContainer = styled.div`
 `;
 
 interface BulletinBoardProps {
-  api: ApiPromise | null;
+  api: ApiPromiseType;
 }
 
 const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
@@ -46,15 +46,12 @@ const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
   const [postDetailsDisplay, setPostDetailsDisplay] = useState<PostByAccount | null>(null);
 
   const getAllPostsAuthors = useCallback(async () => {
-    const postsAuthors = await getPostsAuthors(api);
+    const postsAuthors = api && (await getPostsAuthors(api));
     return postsAuthors;
   }, [api]);
 
   const getPostByAuthor = useCallback(
-    async (accountId: string) => {
-      const post = await getPostByAccount(accountId, api);
-      return post;
-    },
+    async (accountId: string) => api && getPostByAccount(accountId, api),
     [api]
   );
 
@@ -81,9 +78,11 @@ const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
     dispatch(setAllPosts(posts));
   }, [posts, posts.length, dispatch]);
 
-  const handlePostDelete = (): void => {
+  const handlePostDelete = () => {
     if (!loggedAccount) return;
-    deletePost(api, loggedAccount).then(() => dispatch(removePost(loggedAccount.address)));
+    if (api) {
+      deletePost(api, loggedAccount, () => dispatch(removePost(loggedAccount.address)));
+    }
   };
 
   const displayFullPost = (id: string) => {
