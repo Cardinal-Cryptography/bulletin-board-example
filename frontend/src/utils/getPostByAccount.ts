@@ -8,6 +8,7 @@ import { ErrorToastMessages, readOnlyGasLimit } from 'shared/constants';
 import bulletinBoardMetadata from '../metadata/metadata_bulletin_board.json';
 import addresses from '../metadata/addresses.json';
 import { sleep } from './sleep';
+import { getDataFromOutput } from './getDataFromOutput';
 
 export type PostByAccount = {
   author: string;
@@ -40,7 +41,7 @@ export const getPostByAccount = async (
     accountId
   );
   if (result.isOk && output) {
-    return output.toHuman() as PostByAccount;
+    return getDataFromOutput<PostByAccount>(output.toHuman());
   }
   if (result.isErr) {
     console.log(result.toHuman());

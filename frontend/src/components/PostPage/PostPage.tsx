@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ApiPromise } from '@polkadot/api';
 import { useSelector } from 'react-redux';
@@ -101,14 +101,14 @@ const PostPage = ({ api }: PostPageProps): JSX.Element => {
 
   const loggedAccount = useSelector((state: RootState) => state.walletAccounts.account);
 
-  useEffect(() => {
-    const getHighlightBlockPrice = async () => {
-      const fetchedPrice = await getHighlightPricePerBlock(api);
-      setHighlightPricePerBlock(fetchedPrice ?? 0);
-    };
-
-    getHighlightBlockPrice();
+  const getHighlightBlockPrice = useCallback(async () => {
+    const fetchedPrice = await getHighlightPricePerBlock(api);
+    setHighlightPricePerBlock(fetchedPrice ?? 0);
   }, [api]);
+
+  useEffect(() => {
+    getHighlightBlockPrice();
+  }, [getHighlightBlockPrice]);
 
   const getHighlightTotalPrice = (): number => highlightPricePerBlock * numOfBlocksHighlight;
 

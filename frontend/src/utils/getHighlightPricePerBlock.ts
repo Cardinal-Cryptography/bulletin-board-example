@@ -8,6 +8,7 @@ import { ErrorToastMessages, readOnlyGasLimit } from 'shared/constants';
 import bulletinBoardMetadata from '../metadata/metadata_bulletin_board.json';
 import addresses from '../metadata/addresses.json';
 import { sleep } from './sleep';
+import { getDataFromOutput } from './getDataFromOutput';
 
 export const getHighlightPricePerBlock = async (api: ApiPromise | null): Promise<number | null> => {
   await sleep(500);
@@ -29,7 +30,7 @@ export const getHighlightPricePerBlock = async (api: ApiPromise | null): Promise
   console.log(output);
 
   if (result.isOk && output) {
-    return Number(output.toHuman());
+    return Number(getDataFromOutput<string[]>(output.toHuman()));
   }
   if (result.isErr) {
     console.log(result.toHuman());

@@ -8,6 +8,7 @@ import { ErrorToastMessages, readOnlyGasLimit } from 'shared/constants';
 import highlightedPostsMetadata from '../metadata/metadata_highlighted_posts.json';
 import addresses from '../metadata/addresses.json';
 import { sleep } from './sleep';
+import { getDataFromOutput } from './getDataFromOutput';
 
 export const getHighlightedPostsAuthors = async (
   api: ApiPromise | null
@@ -29,10 +30,9 @@ export const getHighlightedPostsAuthors = async (
     gasLimit,
   });
   if (result.isOk && output) {
-    return output.toHuman() as string[];
+    return getDataFromOutput<string[]>(output.toHuman());
   }
   if (result.isErr) {
-    console.log(result.toHuman());
     displayErrorToast(ErrorToastMessages.ERROR_FETCHING_DATA);
   }
   return null;

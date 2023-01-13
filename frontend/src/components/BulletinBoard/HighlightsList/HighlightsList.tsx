@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ApiPromise } from '@polkadot/api';
 import styled from 'styled-components';
 
@@ -150,30 +150,32 @@ interface HighlightsListProps {
 const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
   const [highlightedPosts, setHighlightedPosts] = useState<PostByAccount[]>([]);
 
+  const getAllPostsAuthors = useCallback(async () => getHighlightedPostsAuthors(api), [api]);
+
+  const getPostByAuthor = useCallback(
+    async (accountId: string) => getPostByAccount(accountId, api),
+    [api]
+  );
+
   useEffect(() => {
     const allPosts: PostByAccount[] = [];
-    const getAllPostsAuthors = async () => {
-      const postsAuthors = await getHighlightedPostsAuthors(api);
-      return postsAuthors;
-    };
-
-    const getPostByAuthor = async (accountId: string) => {
-      const post = await getPostByAccount(accountId, api);
-      return post;
-    };
 
     getAllPostsAuthors().then((authors) => {
-      console.log(authors);
-      authors?.forEach((author) => {
-        getPostByAuthor(author).then((post) => {
-          if (post) {
-            allPosts.push(post);
-          }
+      if (authors && authors?.length) {
+        authors.forEach((author, i) => {
+          getPostByAuthor(author).then((post) => {
+            if (post?.author) {
+              allPosts.push(post);
+              if (i === authors.length - 1) {
+                setHighlightedPosts(allPosts);
+              }
+            }
+          });
         });
-      });
+      }
     });
-    setHighlightedPosts(allPosts);
-  }, [api]);
+  }, [getAllPostsAuthors, getPostByAuthor]);
+
   return (
     <HighlightsListWrapper className={highlightedPosts?.length ? 'no-space-right' : ''}>
       <div className="background-gradient" />

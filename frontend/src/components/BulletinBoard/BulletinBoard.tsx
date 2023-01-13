@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ApiPromise } from '@polkadot/api';
 import { useDispatch, useSelector } from 'react-redux';
@@ -45,29 +45,37 @@ const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
   const testPosts = useSelector((state: RootState) => state.posts.posts);
   const [postDetailsDisplay, setPostDetailsDisplay] = useState<PostByAccount | null>(null);
 
-  useEffect(() => {
-    const allPosts: PostByAccount[] = [];
-    const getAllPostsAuthors = async () => {
-      const postsAuthors = await getPostsAuthors(api);
-      return postsAuthors;
-    };
+  const getAllPostsAuthors = useCallback(async () => {
+    const postsAuthors = await getPostsAuthors(api);
+    return postsAuthors;
+  }, [api]);
 
-    const getPostByAuthor = async (accountId: string) => {
+  const getPostByAuthor = useCallback(
+    async (accountId: string) => {
       const post = await getPostByAccount(accountId, api);
       return post;
-    };
+    },
+    [api]
+  );
+
+  useEffect(() => {
+    const allPosts: PostByAccount[] = [];
 
     getAllPostsAuthors().then((authors) => {
-      authors?.forEach((author) => {
-        getPostByAuthor(author).then((post) => {
-          if (post) {
-            allPosts.push(post);
-          }
+      if (authors && authors?.length) {
+        authors.forEach((author, i) => {
+          getPostByAuthor(author).then((post) => {
+            if (post) {
+              allPosts.push(post);
+              if (i === authors.length - 1) {
+                setPosts(allPosts);
+              }
+            }
+          });
         });
-      });
+      }
     });
-    setPosts(allPosts);
-  }, [api, dispatch]);
+  }, [getAllPostsAuthors, getPostByAuthor, dispatch]);
 
   useEffect(() => {
     dispatch(setAllPosts(posts));
