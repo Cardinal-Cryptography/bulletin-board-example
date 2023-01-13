@@ -52,11 +52,11 @@ To sign transactions, we will be using [polkadot extension](https://polkadot.js.
 3. Then **Import account from pre-existing seed**.
 4. In the **EXISTING 12 OR 24-WORD MNEOMNIC SEED** form add `bottom drive obey lake curtain smoke basket hold race lonely fit walk` -- this it the seed for the default accounts. You can find it on https://docs.substrate.io/reference/command-line-tools/subkey/#subkey-generate-node-key .
 5. Click **ADVANCED** and use one of the derivation paths:
-* `//Bob`
-* `//Charlie`
-* `//Dave`
-* `//Eve`
-* `//Ferdie`
+* `//Bob//stash`
+* `//Charlie//stash`
+* `//Dave//stash`
+* `//Eve//stash`
+* `//Ferdie//stash`
 6. Finish the account setup.
 
 Now, you can use the newly-added account with the example frontend.
