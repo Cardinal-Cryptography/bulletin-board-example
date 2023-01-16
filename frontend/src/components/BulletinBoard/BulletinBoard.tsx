@@ -40,15 +40,13 @@ interface BulletinBoardProps {
 
 const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
   const [posts, setPosts] = useState<PostByAccount[]>([]);
+  const [refetch, setRefetch] = useState(false);
   const dispatch = useDispatch();
   const loggedAccount = useSelector((state: RootState) => state.walletAccounts.account);
   const testPosts = useSelector((state: RootState) => state.posts.posts);
   const [postDetailsDisplay, setPostDetailsDisplay] = useState<PostByAccount | null>(null);
 
-  const getAllPostsAuthors = useCallback(async () => {
-    const postsAuthors = api && (await getPostsAuthors(api));
-    return postsAuthors;
-  }, [api]);
+  const getAllPostsAuthors = useCallback(async () => api && getPostsAuthors(api), [api]);
 
   const getPostByAuthor = useCallback(
     async (accountId: string) => api && getPostByAccount(accountId, api),
@@ -72,7 +70,7 @@ const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
         });
       }
     });
-  }, [getAllPostsAuthors, getPostByAuthor, dispatch]);
+  }, [getAllPostsAuthors, getPostByAuthor]);
 
   useEffect(() => {
     dispatch(setAllPosts(posts));
@@ -81,7 +79,10 @@ const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
   const handlePostDelete = () => {
     if (!loggedAccount) return;
     if (api) {
-      deletePost(api, loggedAccount, () => dispatch(removePost(loggedAccount.address)));
+      deletePost(api, loggedAccount, () => {
+        dispatch(removePost(loggedAccount.address));
+        setRefetch(true);
+      });
     }
   };
 
@@ -113,7 +114,7 @@ const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
               />
             ))}
           </BulletinBoardContainer>
-          <HighlightsList api={api} />
+          <HighlightsList api={api} getPostByAuthor={getPostByAuthor} refetch={refetch} />
         </Wrapper>
       </Layout>
     </>

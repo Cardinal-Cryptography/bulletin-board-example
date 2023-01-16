@@ -145,17 +145,14 @@ const HighlightsBoardHeading = styled.div`
 
 interface HighlightsListProps {
   api: ApiPromiseType;
+  getPostByAuthor: (author: string) => Promise<PostByAccount | null>;
+  refetch: boolean;
 }
 
-const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
+const HighlightsList = ({ api, getPostByAuthor, refetch }: HighlightsListProps): JSX.Element => {
   const [highlightedPosts, setHighlightedPosts] = useState<PostByAccount[]>([]);
 
   const getAllPostsAuthors = useCallback(async () => api && getHighlightedPostsAuthors(api), [api]);
-
-  const getPostByAuthor = useCallback(
-    async (accountId: string) => api && getPostByAccount(accountId, api),
-    [api]
-  );
 
   useEffect(() => {
     const allPosts: PostByAccount[] = [];
@@ -164,7 +161,7 @@ const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
       if (authors && authors?.length) {
         authors.forEach((author, i) => {
           getPostByAuthor(author).then((post) => {
-            if (post?.author) {
+            if (post) {
               allPosts.push(post);
               if (i === authors.length - 1) {
                 setHighlightedPosts(allPosts);
@@ -174,10 +171,12 @@ const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
         });
       }
     });
-  }, [getAllPostsAuthors, getPostByAuthor]);
+  }, [getAllPostsAuthors, getPostByAuthor, refetch]);
+
+  const isHighlightedPostsExists = highlightedPosts?.length;
 
   return (
-    <HighlightsListWrapper className={highlightedPosts?.length ? 'no-space-right' : ''}>
+    <HighlightsListWrapper className={isHighlightedPostsExists ? 'no-space-right' : ''}>
       <div className="background-gradient" />
       <HighlightsHeaderWrapper>
         <SectionHeader>
@@ -185,7 +184,7 @@ const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
         </SectionHeader>
       </HighlightsHeaderWrapper>
 
-      {!!highlightedPosts?.length && (
+      {!!isHighlightedPostsExists && (
         <HighlightsBoardContainer>
           <HighlightsBoardHeading className="board-row">
             <p>#</p>
@@ -200,7 +199,7 @@ const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
         </HighlightsBoardContainer>
       )}
 
-      {!highlightedPosts?.length && (
+      {!isHighlightedPostsExists && (
         <HighlightsPlaceholder>
           <p>No records yet</p>
         </HighlightsPlaceholder>
