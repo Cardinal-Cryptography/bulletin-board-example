@@ -57,18 +57,16 @@ const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
     const allPosts: PostByAccount[] = [];
 
     getAllPostsAuthors().then((authors) => {
-      if (authors && authors?.length) {
-        authors.forEach((author, i) => {
-          getPostByAuthor(author).then((post) => {
-            if (post) {
-              allPosts.push(post);
-              if (i === authors.length - 1) {
-                setPosts(allPosts);
-              }
+      authors?.forEach((author, i) => {
+        getPostByAuthor(author).then((post) => {
+          if (post) {
+            allPosts.push(post);
+            if (i === authors.length - 1) {
+              setPosts(allPosts);
             }
-          });
+          }
         });
-      }
+      });
     });
   }, [getAllPostsAuthors, getPostByAuthor]);
 
@@ -114,7 +112,7 @@ const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
               />
             ))}
           </BulletinBoardContainer>
-          <HighlightsList api={api} getPostByAuthor={getPostByAuthor} refetch={refetch} />
+          <HighlightsList api={api} refetch={refetch} />
         </Wrapper>
       </Layout>
     </>

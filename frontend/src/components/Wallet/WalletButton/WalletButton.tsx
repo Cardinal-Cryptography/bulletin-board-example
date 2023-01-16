@@ -147,21 +147,19 @@ const WalletButton = ({
 
   const enableExtension = useCallback(async () => {
     const extension = await web3Enable(APP_NAME);
-    if (extension.length === 0) {
+    const isExtensionExists = extension.length === 0;
+    if (isExtensionExists) {
       displayErrorToast(pluginTextWithLink);
-      throw new Error(ErrorToastMessages.NO_EXTENSION);
+      console.error(ErrorToastMessages.NO_EXTENSION);
     }
+    return isExtensionExists;
   }, [pluginTextWithLink]);
 
-  useEffect(() => {
-    if (loggedAccountAddress) enableExtension().then();
-  }, [loggedAccountAddress, enableExtension]);
-
   const walletExtensionSetup = async (): Promise<void> => {
-    await enableExtension();
-
+    if (await enableExtension()) return;
     const accounts = await web3Accounts();
     dispatch(updateAllAccounts(accounts));
+
     if (accounts.length === 1) {
       dispatch(connectWallet(accounts[0]));
     } else if (!accounts.length) {
@@ -170,6 +168,10 @@ const WalletButton = ({
       setIsAccountsModalVisible();
     }
   };
+
+  useEffect(() => {
+    if (loggedAccountAddress) enableExtension();
+  }, [enableExtension, loggedAccountAddress]);
 
   const handleClick = () => {
     if (!loggedAccountAddress) {

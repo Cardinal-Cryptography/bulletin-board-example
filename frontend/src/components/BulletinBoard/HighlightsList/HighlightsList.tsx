@@ -145,31 +145,33 @@ const HighlightsBoardHeading = styled.div`
 
 interface HighlightsListProps {
   api: ApiPromiseType;
-  getPostByAuthor: (author: string) => Promise<PostByAccount | null>;
   refetch: boolean;
 }
 
-const HighlightsList = ({ api, getPostByAuthor, refetch }: HighlightsListProps): JSX.Element => {
+const HighlightsList = ({ api, refetch }: HighlightsListProps): JSX.Element => {
   const [highlightedPosts, setHighlightedPosts] = useState<PostByAccount[]>([]);
 
   const getAllPostsAuthors = useCallback(async () => api && getHighlightedPostsAuthors(api), [api]);
+
+  const getPostByAuthor = useCallback(
+    async (accountId: string) => api && getPostByAccount(accountId, api),
+    [api]
+  );
 
   useEffect(() => {
     const allPosts: PostByAccount[] = [];
 
     getAllPostsAuthors().then((authors) => {
-      if (authors && authors?.length) {
-        authors.forEach((author, i) => {
-          getPostByAuthor(author).then((post) => {
-            if (post) {
-              allPosts.push(post);
-              if (i === authors.length - 1) {
-                setHighlightedPosts(allPosts);
-              }
+      authors?.forEach((author, i) => {
+        getPostByAuthor(author).then((post) => {
+          if (post) {
+            allPosts.push(post);
+            if (i === authors.length - 1) {
+              setHighlightedPosts(allPosts);
             }
-          });
+          }
         });
-      }
+      });
     });
   }, [getAllPostsAuthors, getPostByAuthor, refetch]);
 
