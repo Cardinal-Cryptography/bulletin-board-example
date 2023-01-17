@@ -4,8 +4,6 @@ import type { WeightV2 } from '@polkadot/types/interfaces';
 
 export const APP_NAME = 'Aleph Zero The Bulletin Board';
 
-export const GAS_LIMIT_VALUE = 5 * 22361000000; // it was checked that gasRequired is 22361000000 for the press operation and no operation requires more gas, so it was multiplied times 5 for safety reasons
-
 export const MAX_CALL_WEIGHT = new BN(5_000_000_000_000).isub(BN_ONE);
 
 // For read-only queries we don't need the exact gas limit
