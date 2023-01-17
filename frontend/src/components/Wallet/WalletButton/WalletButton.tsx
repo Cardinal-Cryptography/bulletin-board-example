@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 
@@ -15,6 +15,8 @@ import {
 import { ErrorToastMessages, APP_NAME } from 'shared/constants/index';
 import getWalletAddressShort from 'utils/getWalletAddressShort';
 import { ReactComponent as ChevronDownIcon } from 'assets/ChevronDown.svg';
+
+import { RootState } from '../../../redux/store';
 
 const WalletButtonStyling = styled.button`
   height: 36px;
@@ -131,24 +133,33 @@ const WalletButton = ({
   const [isTooltipOpen, setIsTooltipOpen] = useState<boolean>(false);
   const dispatch = useDispatch();
 
-  const pluginTextWithLink = (
-    <span>
-      {ErrorToastMessages.NO_EXTENSION} The plugin can be found&nbsp;
-      <a href="https://polkadot.js.org/extension/" target="_blank" rel="noreferrer">
-        <span className="message-link">here</span>.
-      </a>
-    </span>
+  const pluginTextWithLink = useMemo(
+    () => (
+      <span>
+        {ErrorToastMessages.NO_EXTENSION} The plugin can be found&nbsp;
+        <a href="https://polkadot.js.org/extension/" target="_blank" rel="noreferrer">
+          <span className="message-link">here</span>.
+        </a>
+      </span>
+    ),
+    []
   );
 
-  const walletExtensionSetup = async (): Promise<void> => {
+  const enableExtension = useCallback(async () => {
     const extension = await web3Enable(APP_NAME);
-    if (extension.length === 0) {
+    const isExtensionExists = extension.length === 0;
+    if (isExtensionExists) {
       displayErrorToast(pluginTextWithLink);
-      return;
+      console.error(ErrorToastMessages.NO_EXTENSION);
     }
+    return isExtensionExists;
+  }, [pluginTextWithLink]);
 
+  const walletExtensionSetup = async (): Promise<void> => {
+    if (await enableExtension()) return;
     const accounts = await web3Accounts();
     dispatch(updateAllAccounts(accounts));
+
     if (accounts.length === 1) {
       dispatch(connectWallet(accounts[0]));
     } else if (!accounts.length) {
@@ -157,6 +168,10 @@ const WalletButton = ({
       setIsAccountsModalVisible();
     }
   };
+
+  useEffect(() => {
+    if (loggedAccountAddress) enableExtension();
+  }, [enableExtension, loggedAccountAddress]);
 
   const handleClick = () => {
     if (!loggedAccountAddress) {
