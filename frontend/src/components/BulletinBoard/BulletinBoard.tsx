@@ -54,20 +54,12 @@ const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
   );
 
   useEffect(() => {
-    const allPosts: PostByAccount[] = [];
-
-    getAllPostsAuthors().then((authors) => {
-      authors?.forEach((author, i) => {
-        getPostByAuthor(author).then((post) => {
-          if (post) {
-            allPosts.push(post);
-            if (i === authors.length - 1) {
-              setPosts(allPosts);
-            }
-          }
-        });
-      });
-    });
+    const getPosts = async () => {
+      const authors = await getAllPostsAuthors();
+      const authorsPosts = authors?.map(async (author) => getPostByAuthor(author));
+      if (authorsPosts) Promise.all(authorsPosts).then((p) => p && setPosts(p as PostByAccount[]));
+    };
+    getPosts();
   }, [getAllPostsAuthors, getPostByAuthor]);
 
   useEffect(() => {
