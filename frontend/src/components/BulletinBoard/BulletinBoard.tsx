@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { ApiPromise } from '@polkadot/api';
 import { useDispatch, useSelector } from 'react-redux';
 
 import HeroHeading from 'components/HeroHeading';
@@ -16,6 +15,7 @@ import { getPostByAccount, PostByAccount } from 'utils/getPostByAccount';
 
 import HighlightsList from './HighlightsList';
 import PostDetailsPopup from './PostDetailsPopup';
+import { ApiPromiseType } from '../../App';
 
 const Wrapper = styled.div`
   color: ${({ theme }) => theme.colors.white};
@@ -35,47 +35,45 @@ const BulletinBoardContainer = styled.div`
 `;
 
 interface BulletinBoardProps {
-  api: ApiPromise | null;
+  api: ApiPromiseType;
 }
 
 const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
   const [posts, setPosts] = useState<PostByAccount[]>([]);
+  const [refetch, setRefetch] = useState(false);
   const dispatch = useDispatch();
   const loggedAccount = useSelector((state: RootState) => state.walletAccounts.account);
   const testPosts = useSelector((state: RootState) => state.posts.posts);
   const [postDetailsDisplay, setPostDetailsDisplay] = useState<PostByAccount | null>(null);
 
+  const getAllPostsAuthors = useCallback(async () => api && getPostsAuthors(api), [api]);
+
+  const getPostByAuthor = useCallback(
+    async (accountId: string) => api && getPostByAccount(accountId, api),
+    [api]
+  );
+
   useEffect(() => {
-    const allPosts: PostByAccount[] = [];
-    const getAllPostsAuthors = async () => {
-      const postsAuthors = await getPostsAuthors(api);
-      return postsAuthors;
+    const getPosts = async () => {
+      const authors = await getAllPostsAuthors();
+      const authorsPosts = authors?.map(async (author) => getPostByAuthor(author));
+      if (authorsPosts) Promise.all(authorsPosts).then((p) => p && setPosts(p as PostByAccount[]));
     };
-
-    const getPostByAuthor = async (accountId: string) => {
-      const post = await getPostByAccount(accountId, api);
-      return post;
-    };
-
-    getAllPostsAuthors().then((authors) => {
-      authors?.forEach((author) => {
-        getPostByAuthor(author).then((post) => {
-          if (post) {
-            allPosts.push(post);
-          }
-        });
-      });
-    });
-    setPosts(allPosts);
-  }, [api, dispatch]);
+    getPosts();
+  }, [getAllPostsAuthors, getPostByAuthor]);
 
   useEffect(() => {
     dispatch(setAllPosts(posts));
   }, [posts, posts.length, dispatch]);
 
-  const handlePostDelete = (): void => {
+  const handlePostDelete = () => {
     if (!loggedAccount) return;
-    deletePost(api, loggedAccount).then(() => dispatch(removePost(loggedAccount.address)));
+    if (api) {
+      deletePost(api, loggedAccount, () => {
+        dispatch(removePost(loggedAccount.address));
+        setRefetch(true);
+      });
+    }
   };
 
   const displayFullPost = (id: string) => {
@@ -106,7 +104,7 @@ const BulletinBoard = ({ api }: BulletinBoardProps): JSX.Element => {
               />
             ))}
           </BulletinBoardContainer>
-          <HighlightsList api={api} />
+          <HighlightsList api={api} refetch={refetch} />
         </Wrapper>
       </Layout>
     </>
