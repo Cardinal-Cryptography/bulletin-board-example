@@ -25,24 +25,30 @@ export const deletePost = async (
   );
   const injector = await web3FromSource(loggedUser.meta.source);
 
-  const gasLimit = await getGasLimit(api, loggedUser.address, 'delete', contract);
+  const gasLimitResult = await getGasLimit(api, loggedUser.address, 'delete', contract);
 
-  await contract.tx
-    .delete({
-      gasLimit,
-    })
-    .signAndSend(loggedUser.address, { signer: injector.signer }, ({ events = [], status }) => {
-      events.forEach(({ event: { method } }) => {
-        if (method === 'ExtrinsicSuccess' && status.type === 'InBlock') {
-          displaySuccessToast();
-          onSuccess();
-        } else if (method === 'ExtrinsicFailed') {
-          const errorMessage = `${ErrorToastMessages.CUSTOM} ${method}.`;
-          displayErrorToast(errorMessage);
-        }
+  if (gasLimitResult.ok) {
+    const { value: gasLimit } = gasLimitResult;
+
+    await contract.tx
+      .delete({
+        gasLimit,
+      })
+      .signAndSend(loggedUser.address, { signer: injector.signer }, ({ events = [], status }) => {
+        events.forEach(({ event: { method } }) => {
+          if (method === 'ExtrinsicSuccess' && status.type === 'InBlock') {
+            displaySuccessToast();
+            onSuccess();
+          } else if (method === 'ExtrinsicFailed') {
+            const errorMessage = `${ErrorToastMessages.CUSTOM} ${method}.`;
+            displayErrorToast(errorMessage);
+          }
+        });
+      })
+      .catch((error) => {
+        displayErrorToast(`${ErrorToastMessages.CUSTOM} ${error}.`);
       });
-    })
-    .catch((error) => {
-      displayErrorToast(`${ErrorToastMessages.CUSTOM} ${error}.`);
-    });
+  } else {
+    console.log(gasLimitResult.error);
+  }
 };

@@ -31,9 +31,9 @@ export const getGasLimit = async (
   contract: ContractPromise,
   options = {} as ContractOptions,
   args = [] as unknown[]
-): Promise<WeightV2 | string> => {
+): Promise<Result<WeightV2, string>> => {
   const abiMessage = toContractAbiMessage(contract, message);
-  if (!abiMessage.ok) return abiMessage.error;
+  if (!abiMessage.ok) return abiMessage;
 
   const { value, gasLimit, storageDepositLimit } = options;
 
@@ -46,5 +46,5 @@ export const getGasLimit = async (
     abiMessage.value.toU8a(args)
   );
 
-  return result.gasRequired;
+  return { ok: true, value: result.gasRequired };
 };

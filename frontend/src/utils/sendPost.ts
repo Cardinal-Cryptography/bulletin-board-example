@@ -32,31 +32,37 @@ export const sendPost = async (
   const options: ContractOptions = {
     value: totalPrice,
   };
-  const gasLimit = await getGasLimit(api, loggedUser.address, 'post', contract, options, [
+  const gasLimitResult = await getGasLimit(api, loggedUser.address, 'post', contract, options, [
     expiresAfter,
     postText,
   ]);
 
-  await contract.tx
-    .post(
-      {
-        value: totalPrice,
-        gasLimit,
-      },
-      expiresAfter,
-      postText
-    )
-    .signAndSend(loggedUser.address, { signer: injector.signer }, ({ events = [], status }) => {
-      events.forEach(({ event }) => {
-        const { method } = event;
-        if (method === 'ExtrinsicSuccess' && status.type === 'InBlock') {
-          displaySuccessToast();
-        } else if (method === 'ExtrinsicFailed') {
-          displayErrorToast(`${ErrorToastMessages.CUSTOM} ${method}.`);
-        }
+  if (gasLimitResult.ok) {
+    const { value: gasLimit } = gasLimitResult;
+
+    await contract.tx
+      .post(
+        {
+          value: totalPrice,
+          gasLimit,
+        },
+        expiresAfter,
+        postText
+      )
+      .signAndSend(loggedUser.address, { signer: injector.signer }, ({ events = [], status }) => {
+        events.forEach(({ event }) => {
+          const { method } = event;
+          if (method === 'ExtrinsicSuccess' && status.type === 'InBlock') {
+            displaySuccessToast();
+          } else if (method === 'ExtrinsicFailed') {
+            displayErrorToast(`${ErrorToastMessages.CUSTOM} ${method}.`);
+          }
+        });
+      })
+      .catch((error) => {
+        displayErrorToast(`${ErrorToastMessages.CUSTOM} ${error}.`);
       });
-    })
-    .catch((error) => {
-      displayErrorToast(`${ErrorToastMessages.CUSTOM} ${error}.`);
-    });
+  } else {
+    console.log(gasLimitResult.error);
+  }
 };
