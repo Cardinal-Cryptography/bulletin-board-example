@@ -32,8 +32,10 @@ export const sendPost = async (
   const options: ContractOptions = {
     value: totalPrice,
   };
-  const args = [expiresAfter, postText];
-  const gasLimit = await getGasLimit(api, loggedUser.address, 'post', contract, options, args);
+  const gasLimit = await getGasLimit(api, loggedUser.address, 'post', contract, options, [
+    expiresAfter,
+    postText,
+  ]);
 
   await contract.tx
     .post(
