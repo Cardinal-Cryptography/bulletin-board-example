@@ -1,7 +1,7 @@
-import type { WeightV2, ContractInstantiateResult } from '@polkadot/types/interfaces';
+import type { Weight } from '@polkadot/types/interfaces';
 import { BN } from '@polkadot/util';
 import { ContractPromise } from '@polkadot/api-contract';
-import { AbiMessage, ContractOptions } from '@polkadot/api-contract/types';
+import { AbiMessage, ContractCallOutcome, ContractOptions } from '@polkadot/api-contract/types';
 import { ApiPromise } from '@polkadot/api';
 
 type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };
@@ -31,13 +31,13 @@ export const getGasLimit = async (
   contract: ContractPromise,
   options = {} as ContractOptions,
   args = [] as unknown[]
-): Promise<Result<WeightV2, string>> => {
+): Promise<Result<Weight, string>> => {
   const abiMessage = toContractAbiMessage(contract, message);
   if (!abiMessage.ok) return abiMessage;
 
   const { value, gasLimit, storageDepositLimit } = options;
 
-  const result = await api.call.contractsApi.call<ContractInstantiateResult>(
+  const result = await api.call.contractsApi.call<ContractCallOutcome>(
     userAddress,
     contract.address,
     value ?? new BN(0),
