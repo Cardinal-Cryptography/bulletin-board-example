@@ -3,3 +3,8 @@
 
 # Ignore backup files creates by cargo fmt.
 **/*.rs.bk
+
+# Ignore addresses and metadata files in the frontend directory.
+# They're changing for every deployment.
+frontend/src/metadata/addresses.json
+scripts/addresses.json

@@ -3,29 +3,30 @@ import { ApiPromise } from '@polkadot/api';
 
 import { displayErrorToast } from 'components/NotificationToast';
 
-import { ErrorToastMessages, GAS_LIMIT_VALUE } from 'shared/constants';
+import { ErrorToastMessages, readOnlyGasLimit } from 'shared/constants';
 
 import highlightedPostsMetadata from '../metadata/metadata_highlighted_posts.json';
 import addresses from '../metadata/addresses.json';
-import { sleep } from './sleep';
+import { getDataFromOutput } from './getDataFromOutput';
 
-export const getHighlightedPostsAuthors = async (
-  api: ApiPromise | null
-): Promise<string[] | null> => {
-  await sleep(500);
-  if (api === null) {
-    displayErrorToast(ErrorToastMessages.ERROR_API_CONN);
-    return null;
-  }
-  const contract = new ContractPromise(api, highlightedPostsMetadata, addresses.highlighted_posts);
+export const getHighlightedPostsAuthors = async (api: ApiPromise): Promise<string[] | null> => {
+  let data = null;
+  // For read-only calls we don't need the estimate as we won't be charged anything.
+  const gasLimit = readOnlyGasLimit(api);
+
+  const contract = new ContractPromise(
+    api,
+    highlightedPostsMetadata,
+    addresses.highlighted_posts_address
+  );
   const { result, output } = await contract.query.highlightedPosts(contract.address, {
-    gasLimit: GAS_LIMIT_VALUE,
+    gasLimit,
   });
   if (result.isOk && output) {
-    return output.toHuman() as string[];
+    data = getDataFromOutput<string[]>(output.toHuman());
   }
   if (result.isErr) {
     displayErrorToast(ErrorToastMessages.ERROR_FETCHING_DATA);
   }
-  return null;
+  return data;
 };

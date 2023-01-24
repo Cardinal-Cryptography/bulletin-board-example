@@ -1,4 +1,0 @@
-export NODE_URL=ws://localhost:9944
-
-export AUTHORITY_SEED=//Alice
-

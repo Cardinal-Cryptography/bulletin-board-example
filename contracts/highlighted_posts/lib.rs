@@ -1,7 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use ink_lang as ink;
-
 pub use highlighted_posts::{
     HighlightedPostsError, HighlightedPostsRef, DELETE_HIGHLIGHT_SELECTOR,
     GET_BY_AUTHOR_SELECTOR, HIGHLIGHTED_POSTS_SELECTOR,
@@ -10,9 +8,7 @@ pub use highlighted_posts::{
 
 #[ink::contract]
 mod highlighted_posts {
-    use ink_lang::{codegen::EmitEvent, utils::initialize_contract};
-    use ink_prelude::vec::Vec;
-    use ink_storage::{traits::SpreadAllocate, Mapping};
+    use ink::{codegen::EmitEvent, prelude::vec::Vec, storage::Mapping};
 
     // Selectors are short byte arrays that uniquely identify the methods of
     // the contract. We need them to construct the `CallBuilder` instance.
@@ -26,8 +22,7 @@ mod highlighted_posts {
 
     pub const GET_BY_AUTHOR_SELECTOR: [u8; 4] = [0, 0, 0, 9];
 
-    type Event =
-        <HighlightedPosts as ink_lang::reflect::ContractEventBase>::Type;
+    type Event = <HighlightedPosts as ink::reflect::ContractEventBase>::Type;
 
     #[ink(event)]
     pub struct PostHighlighted {
@@ -50,7 +45,6 @@ mod highlighted_posts {
 
     /// Set of highlighted posts. One per author.
     #[ink(storage)]
-    #[derive(SpreadAllocate)]
     pub struct HighlightedPosts {
         created_by: AccountId,
         highlighted: Mapping<AccountId, u32>,
@@ -62,10 +56,11 @@ mod highlighted_posts {
         #[ink(constructor)]
         pub fn new() -> Self {
             let caller = Self::env().caller();
-            initialize_contract(|instance: &mut HighlightedPosts| {
-                instance.created_by = caller;
-                instance.highlighted_ids = Vec::new();
-            })
+            Self {
+                created_by: caller,
+                highlighted: Mapping::default(),
+                highlighted_ids: Vec::new(),
+            }
         }
 
         /// Adds the post to the highlighted set.

@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { ApiPromise } from '@polkadot/api';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import SectionHeader from 'components/SectionHeader';
@@ -9,6 +8,7 @@ import { getPostByAccount, PostByAccount } from 'utils/getPostByAccount';
 import { getHighlightedPostsAuthors } from 'utils/getHighlightedPostsAuthors';
 
 import HighlightsRow from './HighlightsRow';
+import { ApiPromiseType } from '../../../App';
 
 const HighlightsListWrapper = styled.div`
   width: 100%;
@@ -144,37 +144,34 @@ const HighlightsBoardHeading = styled.div`
 `;
 
 interface HighlightsListProps {
-  api: ApiPromise | null;
+  api: ApiPromiseType;
+  refetch: boolean;
 }
 
-const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
+const HighlightsList = ({ api, refetch }: HighlightsListProps): JSX.Element => {
   const [highlightedPosts, setHighlightedPosts] = useState<PostByAccount[]>([]);
 
+  const getAllPostsAuthors = useCallback(async () => api && getHighlightedPostsAuthors(api), [api]);
+
+  const getPostByAuthor = useCallback(
+    async (accountId: string) => api && getPostByAccount(accountId, api),
+    [api]
+  );
+
   useEffect(() => {
-    const allPosts: PostByAccount[] = [];
-    const getAllPostsAuthors = async () => {
-      const postsAuthors = await getHighlightedPostsAuthors(api);
-      return postsAuthors;
+    const getPosts = async () => {
+      const authors = await getAllPostsAuthors();
+      const authorsPosts = authors?.map(async (author) => getPostByAuthor(author));
+      if (authorsPosts)
+        Promise.all(authorsPosts).then((p) => p && setHighlightedPosts(p as PostByAccount[]));
     };
+    getPosts();
+  }, [getAllPostsAuthors, getPostByAuthor, refetch]);
 
-    const getPostByAuthor = async (accountId: string) => {
-      const post = await getPostByAccount(accountId, api);
-      return post;
-    };
+  const isHighlightedPostsExists = highlightedPosts?.length;
 
-    getAllPostsAuthors().then((authors) => {
-      authors?.forEach((author) => {
-        getPostByAuthor(author).then((post) => {
-          if (post) {
-            allPosts.push(post);
-          }
-        });
-      });
-    });
-    setHighlightedPosts(allPosts);
-  }, [api]);
   return (
-    <HighlightsListWrapper className={highlightedPosts?.length ? 'no-space-right' : ''}>
+    <HighlightsListWrapper className={isHighlightedPostsExists ? 'no-space-right' : ''}>
       <div className="background-gradient" />
       <HighlightsHeaderWrapper>
         <SectionHeader>
@@ -182,7 +179,7 @@ const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
         </SectionHeader>
       </HighlightsHeaderWrapper>
 
-      {!!highlightedPosts?.length && (
+      {!!isHighlightedPostsExists && (
         <HighlightsBoardContainer>
           <HighlightsBoardHeading className="board-row">
             <p>#</p>
@@ -197,7 +194,7 @@ const HighlightsList = ({ api }: HighlightsListProps): JSX.Element => {
         </HighlightsBoardContainer>
       )}
 
-      {!highlightedPosts?.length && (
+      {!isHighlightedPostsExists && (
         <HighlightsPlaceholder>
           <p>No records yet</p>
         </HighlightsPlaceholder>

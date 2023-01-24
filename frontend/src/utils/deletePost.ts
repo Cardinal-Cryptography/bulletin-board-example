@@ -5,35 +5,46 @@ import { web3FromSource } from '@polkadot/extension-dapp';
 import { displayErrorToast, displaySuccessToast } from 'components/NotificationToast';
 
 import { InjectedAccountWithMeta } from 'redux/slices/walletAccountsSlice';
-import { ErrorToastMessages, GAS_LIMIT_VALUE } from 'shared/constants';
+import { ErrorToastMessages } from 'shared/constants';
 
 import bulletinBoardMetadata from '../metadata/metadata_bulletin_board.json';
 import addresses from '../metadata/addresses.json';
-import { sleep } from './sleep';
+import { getGasLimit } from './dryRun';
 
 export const deletePost = async (
-  api: ApiPromise | null,
-  loggedUser: InjectedAccountWithMeta
+  api: ApiPromise,
+  loggedUser: InjectedAccountWithMeta,
+  onSuccess: () => void
 ): Promise<void> => {
-  await sleep(500);
-  if (api === null) {
-    displayErrorToast(ErrorToastMessages.ERROR_API_CONN);
+  if (!loggedUser.meta.source) return;
+
+  const contract = new ContractPromise(
+    api,
+    bulletinBoardMetadata,
+    addresses.bulletin_board_address
+  );
+  const injector = await web3FromSource(loggedUser.meta.source);
+
+  const gasLimitResult = await getGasLimit(api, loggedUser.address, 'delete', contract);
+
+  if (!gasLimitResult.ok) {
+    console.log(gasLimitResult.error);
     return;
   }
-  if (!loggedUser.meta.source) return;
-  const contract = new ContractPromise(api, bulletinBoardMetadata, addresses.bulletin_board);
-  const injector = await web3FromSource(loggedUser.meta.source);
+  const { value: gasLimit } = gasLimitResult;
 
   await contract.tx
     .delete({
-      gasLimit: GAS_LIMIT_VALUE,
+      gasLimit,
     })
     .signAndSend(loggedUser.address, { signer: injector.signer }, ({ events = [], status }) => {
       events.forEach(({ event: { method } }) => {
         if (method === 'ExtrinsicSuccess' && status.type === 'InBlock') {
           displaySuccessToast();
+          onSuccess();
         } else if (method === 'ExtrinsicFailed') {
-          displayErrorToast(`${ErrorToastMessages.CUSTOM} ${method}.`);
+          const errorMessage = `${ErrorToastMessages.CUSTOM} ${method}.`;
+          displayErrorToast(errorMessage);
         }
       });
     })
