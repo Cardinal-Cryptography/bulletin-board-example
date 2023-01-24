@@ -1,8 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { ContractPromise } from '@polkadot/api-contract';
 import { web3FromSource } from '@polkadot/extension-dapp';
-import type { WeightV2 } from '@polkadot/types/interfaces';
-import { BN } from '@polkadot/util';
+import { ContractOptions } from '@polkadot/api-contract/types';
 
 import { displayErrorToast, displaySuccessToast } from 'components/NotificationToast';
 
@@ -11,9 +10,7 @@ import { ErrorToastMessages } from 'shared/constants';
 
 import bulletinBoardMetadata from '../metadata/metadata_bulletin_board.json';
 import addresses from '../metadata/addresses.json';
-
-const REF_TIME = 14361572382;
-const PROOF_SIZE = 284124;
+import { getGasLimit } from './dryRun';
 
 export const sendPost = async (
   expiresAfter: number,
@@ -32,22 +29,33 @@ export const sendPost = async (
 
   const injector = await web3FromSource(loggedUser.meta.source);
 
-  const gasLimit = api.registry.createType('WeightV2', {
-    refTime: new BN(REF_TIME).muln(2),
-    proofSize: new BN(PROOF_SIZE).muln(2),
-  }) as WeightV2;
+  const options: ContractOptions = {
+    value: totalPrice,
+  };
+  const gasLimitResult = await getGasLimit(api, loggedUser.address, 'post', contract, options, [
+    expiresAfter,
+    postText,
+  ]);
+
+  if (!gasLimitResult.ok) {
+    console.log(gasLimitResult.error);
+    return;
+  }
+
+  const { value: gasLimit } = gasLimitResult;
 
   await contract.tx
     .post(
       {
-        gasLimit,
         value: totalPrice,
+        gasLimit,
       },
       expiresAfter,
       postText
     )
     .signAndSend(loggedUser.address, { signer: injector.signer }, ({ events = [], status }) => {
-      events.forEach(({ event: { method } }) => {
+      events.forEach(({ event }) => {
+        const { method } = event;
         if (method === 'ExtrinsicSuccess' && status.type === 'InBlock') {
           displaySuccessToast();
         } else if (method === 'ExtrinsicFailed') {
