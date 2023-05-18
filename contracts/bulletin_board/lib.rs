@@ -40,7 +40,7 @@ mod bulletin_board {
 
     use ink::{
         env::{
-            call::{build_call, Call, ExecutionInput, FromAccountId, Selector},
+            call::{build_call, ExecutionInput, FromAccountId, Selector},
             DefaultEnvironment, Error as InkEnvError,
         },
         LangError,
@@ -157,12 +157,7 @@ mod bulletin_board {
                                * It should not be required but the API of `*Ref` pattern 
                                * does not allow for calling `instantiate()` 
                                * on a builder where `endowment` is not set.*/
-                .instantiate()
-                .unwrap_or_else(|error| {
-                    panic!(
-                        "failed to instantiate the `HighlightedPosts` contract: {:?}", error
-                    )
-                });
+                .instantiate();
 
             // We're mapping back to the `AccountId` so that we can use it in
             // the `highlight_post` method down below.
@@ -443,8 +438,8 @@ mod bulletin_board {
                 // where each layer has a different error. We're
                 // handling each explicitly below, for the example purposes, but
                 // you can also choose to short-circuit with `?`.
-                let call_result: Result<Result<Result<(), HighlightedPostsError>, ink::LangError>, ink::env::Error> = build_call::<DefaultEnvironment>()
-                    .call_type(Call::new().callee(highlight_board)) // Address of the contract we want to call
+                let call_result: Result<Result<(), HighlightedPostsError>, ink::LangError> = build_call::<DefaultEnvironment>()
+                    .call(highlight_board) // Address of the contract we want to call
                     .exec_input(
                         ExecutionInput::new(Selector::new(
                             HIGHLIGHT_POST_SELECTOR, /* Selector tells ink!
@@ -456,27 +451,22 @@ mod bulletin_board {
                     )
                     .transferred_value(cost) // We can transfer tokens forward to another contract.
                     .returns::<Result<Result<(), HighlightedPostsError>, LangError>>()
-                    .fire();
+                    .invoke();
 
                 match call_result {
-                    // Pallet contracts errors like deserialization error, panic
-                    // in the called contract, etc.
-                    Err(ink_env_error) => {
-                        return Err(BulletinBoardError::from(ink_env_error))
-                    }
                     // An error emitted by the smart contracting language.
                     // For more details see ink::LangError.
-                    Ok(Err(lang_error)) => {
+                    Err(lang_error) => {
                         panic!("Unexpected ink::LangError: {:?}", lang_error)
                     }
                     // `Result<(), HighlightedPostsError>` is the return type of
                     // the method we're calling.
-                    Ok(Ok(Err(contract_call_error))) => {
+                    Ok(Err(contract_call_error)) => {
                         return Err(BulletinBoardError::from(
                             contract_call_error,
                         ))
                     }
-                    Ok(Ok(Ok(_unit))) => return Ok(()),
+                    Ok(Ok(_unit)) => return Ok(()),
                 }
             }
             Ok(())
