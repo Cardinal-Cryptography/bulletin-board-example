@@ -7,20 +7,14 @@ edition = "2021"
 [dependencies]
 # OpenBrush-compatible.
 # See https://github.com/727-Ventures/openbrush-contracts/releases/tag/3.0.0-beta for details.
-ink = { version = "4.0.0", default-features = false}
+ink = { version = "4.2.0", default-features = false}
 
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
-scale-info = { version = "2.3", default-features = false, features = ["derive"], optional = true }
+scale-info = { version = "2.6", default-features = false, features = ["derive"], optional = true }
 
 [lib]
 name = "highlighted_posts"
 path = "lib.rs"
-crate-type = [
-    # Used for normal contract Wasm blobs.
-    "cdylib",
-    # Used for ABI generation and for unit test.
-    "rlib",
-]
 
 [features]
 default = ["std"]
@@ -31,12 +25,12 @@ std = [
 ]
 ink-as-dependency = []
 
-# TODO: Document the followings
-[profile.dev]
-codegen-units = 16
-lto = true
-
-# Number of optimization passes, passed as an argument to `wasm-opt`.
-# For more information see the output of `cargo contract build --help`.
-[package.metadata.contract]
-optimization-passes = "z"
+# # TODO: Document the followings
+# [profile.dev]
+# codegen-units = 16
+# lto = true
+# 
+# # Number of optimization passes, passed as an argument to `wasm-opt`.
+# # For more information see the output of `cargo contract build --help`.
+# [package.metadata.contract]
+# optimization-passes = "z"

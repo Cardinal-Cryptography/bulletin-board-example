@@ -1,4 +1,4 @@
-#![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(not(feature = "std"), no_std, no_main)]
 
 pub use highlighted_posts::{
     HighlightedPostsError, HighlightedPostsRef, DELETE_HIGHLIGHT_SELECTOR,
@@ -53,7 +53,7 @@ mod highlighted_posts {
 
     impl HighlightedPosts {
         /// Constructor that initializes the contract with empty map.
-        #[ink(constructor)]
+        #[ink(constructor, payable)]
         pub fn new() -> Self {
             let caller = Self::env().caller();
             Self {

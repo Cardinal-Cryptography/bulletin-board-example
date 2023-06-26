@@ -11,7 +11,7 @@
 //! contract - otherwise the calls to `highlight_post` and `delete_highlight`
 //! will fail as the receiving contract will not have the expected endpoint.
 
-#![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(not(feature = "std"), no_std, no_main)]
 
 // An entrypoint to all ink! smart contracts.
 // When expanded, this macro will:
@@ -51,7 +51,6 @@ mod bulletin_board {
         prelude::{format, string::String, vec::Vec},
         reflect::ContractEventBase,
         storage::Mapping,
-        ToAccountId,
     };
     /// Errors returned by the contract's methods.
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
@@ -142,37 +141,15 @@ mod bulletin_board {
         /// the contract we will instantiate.
         #[ink(constructor)]
         pub fn new(
-            version: u8,
+            _version: u8,
             price_per_block_listing: u128,
-            highlighted_posts_board_hash: Hash,
+            highlighted_posts_board: Option<AccountId>,
         ) -> Self {
-            // The `*Ref` pattern allows for type-safe operation on the
-            // contract. Here, we're constructing an instance of
-            // `HighlightedPosts` contract.
-
-            let highlighted_posts_board_ref = HighlightedPostsRef::new()
-                .code_hash(highlighted_posts_board_hash)
-                .salt_bytes([version.to_le_bytes().as_ref(), Self::env().caller().as_ref()].concat())
-                .endowment(0) /* Amount of value transferred as part of the call. 
-                               * It should not be required but the API of `*Ref` pattern 
-                               * does not allow for calling `instantiate()` 
-                               * on a builder where `endowment` is not set.*/
-                .instantiate();
-
-            // We're mapping back to the `AccountId` so that we can use it in
-            // the `highlight_post` method down below.
-            let highlighted_posts_board =
-                <HighlightedPostsRef as ToAccountId<
-                    super::bulletin_board::Environment,
-                >>::to_account_id(&highlighted_posts_board_ref);
-
-            // This call is required in order to correctly initialize the
-            // `Mapping`s of our contract.
             Self {
                 id_counter: 0,
                 price_per_block_listing: price_per_block_listing,
                 elements_count: 0,
-                highlighted_posts_board: Some(highlighted_posts_board),
+                highlighted_posts_board: highlighted_posts_board,
                 post_authors: Vec::new(),
                 bulletin_map: Mapping::default(),
                 id_map: Mapping::default(),
