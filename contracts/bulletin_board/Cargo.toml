@@ -30,12 +30,3 @@ std = [
 ]
 ink-as-dependency = []
 
-# # TODO: Document the followings
-# [profile.dev]
-# codegen-units = 16
-# lto = true
-# 
-# # Number of optimization passes, passed as an argument to `wasm-opt`.
-# # For more information see the output of `cargo contract build --help`.
-# [package.metadata.contract]
-# optimization-passes = "z"
