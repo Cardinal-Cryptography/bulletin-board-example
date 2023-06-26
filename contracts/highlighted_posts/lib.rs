@@ -53,7 +53,7 @@ mod highlighted_posts {
 
     impl HighlightedPosts {
         /// Constructor that initializes the contract with empty map.
-        #[ink(constructor, payable)]
+        #[ink(constructor)]
         pub fn new() -> Self {
             let caller = Self::env().caller();
             Self {
