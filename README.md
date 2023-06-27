@@ -8,8 +8,36 @@ This repository will serve dApp developers, interested in developing for Aleph Z
 
 ### Prerequisities
 
-1. `substrate-contracts-node` version [`v0.22.1`](https://github.com/paritytech/substrate-contracts-node/releases/tag/v0.22.1). Later releases are compatible with `pallet-contracts` version `0.9.34` which is not the same one as Aleph Zero Testnet.
-2. `cargo-contract` version [`2.0.0-beta.1`](https://github.com/paritytech/cargo-contract/releases/tag/v2.0.0-beta.1). Later releases are compatible with `pallet-contracts` version `0.9.34` which is not the same one as Aleph Zero Testnet.
+1. Rust in version 1.69.0 with the `nightly-2023-02-07` toolchain.
+2. `substrate-contracts-node` version [`v0.26.0`](https://github.com/paritytech/substrate-contracts-node/releases/tag/v0.26.0).
+3. `cargo-contract` version [`3.0.1`](https://github.com/paritytech/cargo-contract/releases/tag/v3.0.1).
+
+**To install Rust**, run:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+This will install `rustup`, the Rust version and toolchain management tool. Next, use it to install Rust and the appropriate toolchain:
+
+```bash
+rustup install 1.69.0
+rustup install nightly-2023-02-07-x86_64-unknown-linux-gnu
+```
+
+**To install the `substrate-contracts-node`**, simply download it from [the release page](https://github.com/paritytech/substrate-contracts-node/releases/tag/v0.26.0), unpack the archive and put the binary on your path (remember to reload the shell for this to take effect).
+
+**To install cargo contract**, run:
+```bash
+cargo install --force --locked cargo-contract --version 3.0.1
+```
+
+You can verify your versions using:
+```bash
+rustup show
+substrate-contracts-node --version
+cargo contract --version
+```
 
 ### Running chain
 
@@ -37,6 +65,12 @@ In the root directory, run `make setup`. This will:
 * instantiate them
 * record their addresses
 * update the addresses and contracts' metadata files in the frontend directory
+
+If you need to upload the contracts many times, you have two options:
+* run the `make chain-restart` command, which will remove the old contracts,
+* set the `BULLETIN_BOARD_VERSION` variable to different two-digit numbers with each run, which will allow you to upload different instances of the same contract.
+
+Option 1 is the recommended one for most use cases.
 
 ### Running the frontend
 

@@ -11,7 +11,7 @@
 //! contract - otherwise the calls to `highlight_post` and `delete_highlight`
 //! will fail as the receiving contract will not have the expected endpoint.
 
-#![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(not(feature = "std"), no_std, no_main)]
 
 // An entrypoint to all ink! smart contracts.
 // When expanded, this macro will:
@@ -144,19 +144,19 @@ mod bulletin_board {
         pub fn new(
             version: u8,
             price_per_block_listing: u128,
-            highlighted_posts_board_hash: Hash,
+            highlighted_posts_board_hash: Hash
         ) -> Self {
             // The `*Ref` pattern allows for type-safe operation on the
             // contract. Here, we're constructing an instance of
             // `HighlightedPosts` contract.
 
             let highlighted_posts_board_ref = HighlightedPostsRef::new()
-                .code_hash(highlighted_posts_board_hash)
-                .salt_bytes([version.to_le_bytes().as_ref(), Self::env().caller().as_ref()].concat())
                 .endowment(0) /* Amount of value transferred as part of the call. 
                                * It should not be required but the API of `*Ref` pattern 
                                * does not allow for calling `instantiate()` 
                                * on a builder where `endowment` is not set.*/
+                .code_hash(highlighted_posts_board_hash)
+                .salt_bytes(&[version.to_le_bytes().as_ref(), Self::env().caller().as_ref()].concat()[..4])
                 .instantiate();
 
             // We're mapping back to the `AccountId` so that we can use it in
@@ -166,8 +166,6 @@ mod bulletin_board {
                     super::bulletin_board::Environment,
                 >>::to_account_id(&highlighted_posts_board_ref);
 
-            // This call is required in order to correctly initialize the
-            // `Mapping`s of our contract.
             Self {
                 id_counter: 0,
                 price_per_block_listing: price_per_block_listing,

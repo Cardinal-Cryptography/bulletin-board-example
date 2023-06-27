@@ -38,7 +38,7 @@ function upload_contract {
 
     # --- UPLOAD CONTRACT CODE
 
-    code_hash=$(cargo contract upload --quiet --url "$NODE_URL" --suri "$AUTHORITY_SEED" --skip-confirm)
+    code_hash=$(cargo contract upload --quiet --url "$NODE_URL" --suri "$AUTHORITY_SEED" --execute --skip-confirm)
     code_hash=$(echo "${code_hash}" | grep hash | tail -1 | cut -c 14-)
 
     eval $__resultvar=${code_hash}
@@ -70,8 +70,11 @@ temp_file=$(mktemp)
 # Remove temporary file when finished.
 trap "rm -f $temp_file" 0 2 3 15 
 
-echo "Instantiating Bulletin Board contract"
-cargo contract instantiate --url "$NODE_URL" --suri "$AUTHORITY_SEED" --code-hash $BULLETIN_BOARD_CODE_HASH --constructor new --args "0" "10" $HIGHLIGHTED_POSTS_CODE_HASH --skip-confirm --output-json > temp_file
+SALT=${BULLETIN_BOARD_VERSION:-0}
+BULLETIN_BOARD_CONTRACT_FILE="target/ink/bulletin_board.contract"
+
+echo "Instantiating Bulletin Board contract (version: ${SALT})"
+cargo contract instantiate --url "$NODE_URL" --salt ${SALT} --suri "$AUTHORITY_SEED" $BULLETIN_BOARD_CONTRACT_FILE --constructor new --args "${SALT}" "10" $HIGHLIGHTED_POSTS_CODE_HASH --execute --skip-confirm --output-json > temp_file
 
 # We're initializing `highlighted_posts` contract in the constructor of `bulletin board`
 # so there will be multiple new contract addresses. `cargo contract` outputs the first one
@@ -106,3 +109,4 @@ jq -n --arg bulletin_board_code_hash "$BULLETIN_BOARD_CODE_HASH" \
 
 echo "Contract addresses stored in addresses.json"
 exit 0
+
