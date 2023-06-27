@@ -38,7 +38,7 @@ function upload_contract {
 
     # --- UPLOAD CONTRACT CODE
 
-    code_hash=$(cargo contract upload --quiet --url "$NODE_URL" --suri "$AUTHORITY_SEED" --skip-confirm)
+    code_hash=$(cargo contract upload --quiet --url "$NODE_URL" --suri "$AUTHORITY_SEED" --execute --skip-confirm)
     code_hash=$(echo "${code_hash}" | grep hash | tail -1 | cut -c 14-)
 
     eval $__resultvar=${code_hash}
@@ -63,20 +63,31 @@ echo "Highlighted Posts code hash: ${HIGHLIGHTED_POSTS_CODE_HASH}"
 
 # --- instantiate contracts
 
-pushd ${CONTRACTS_PATH}
+pushd ${CONTRACTS_PATH}/bulletin_board
 
-echo "Instantiating Highlighted Posts contract"
-HIGHLIGHTED_POSTS_WASM_FILE="highlighted_posts/target/ink/highlighted_posts.contract"
-HIGHLIGHTED_POSTS_ADDRESS=$(cargo contract instantiate --url "$NODE_URL" --salt 48 --suri "$AUTHORITY_SEED" ${HIGHLIGHTED_POSTS_WASM_FILE} --constructor new --execute --skip-confirm | tail -n 1)
-HIGHLIGHTED_POSTS_ADDRESS=${HIGHLIGHTED_POSTS_ADDRESS: -48}
+# Using temporary file as piping JSON from env variable crates problems with escaping.
+temp_file=$(mktemp)
+# Remove temporary file when finished.
+trap "rm -f $temp_file" 0 2 3 15 
 
-echo "Instantiating Bulletin Board contract"
-BULLETIN_BOARD_WASM_FILE="bulletin_board/target/ink/bulletin_board.contract"
-BULLETIN_BOARD_ADDRESS=$(cargo contract instantiate --url "$NODE_URL" --salt 48 --suri "$AUTHORITY_SEED" ${BULLETIN_BOARD_WASM_FILE} --constructor new --args "0" "10" "Some(\"${HIGHLIGHTED_POSTS_ADDRESS}\")" --execute --skip-confirm | tail -n 1)
-BULLETIN_BOARD_ADDRESS=${BULLETIN_BOARD_ADDRESS: -48}
+SALT=${BULLETIN_BOARD_VERSION:-0}
+BULLETIN_BOARD_CONTRACT_FILE="target/ink/bulletin_board.contract"
 
+echo "Instantiating Bulletin Board contract (version: ${SALT})"
+cargo contract instantiate --url "$NODE_URL" --salt ${SALT} --suri "$AUTHORITY_SEED" $BULLETIN_BOARD_CONTRACT_FILE --constructor new --args "${SALT}" "10" $HIGHLIGHTED_POSTS_CODE_HASH --execute --skip-confirm --output-json > temp_file
+
+# We're initializing `highlighted_posts` contract in the constructor of `bulletin board`
+# so there will be multiple new contract addresses. `cargo contract` outputs the first one
+# from the list but that will be the last contract instantiated and the Bulletin Board contract address is the last one on that list.
+BULLETIN_BOARD_ADDRESS=$(cat temp_file | jq  '.events[] | select((.pallet == "Contracts") and (.name = "Instantiated")) | .fields[] | select(.name == "contract") | .value.Literal' | tail -1 | tr -d '"')
 if [[ -z BULLETIN_BOARD_ADDRESS && -v BULLETIN_BOARD_ADDRESS ]]; then
     echo "Empty BULLETIN_BOARD_ADDRESS"
+    exit 1
+fi
+
+HIGHLIGHTED_POSTS_ADDRESS=$(cat temp_file | jq  '.events[] | select((.pallet == "Contracts") and (.name = "Instantiated")) | .fields[] | select(.name == "contract") | .value.Literal' | head -1 | tr -d '"')
+if [[ -z HIGHLIGHTED_POSTS_ADDRESS && -v HIGHLIGHTED_POSTS_ADDRESS ]]; then
+    echo "Empty HIGHLIGHTED_POSTS_ADDDRESS"
     exit 1
 fi
 
@@ -98,3 +109,4 @@ jq -n --arg bulletin_board_code_hash "$BULLETIN_BOARD_CODE_HASH" \
 
 echo "Contract addresses stored in addresses.json"
 exit 0
+
